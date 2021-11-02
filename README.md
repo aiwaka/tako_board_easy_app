@@ -1,0 +1,1 @@
+# tako_board_easy_app
