@@ -35,7 +35,7 @@ import addRecordToFirestore from "@/composables/add-record";
 import RecordItem from "@/components/RecordItem.vue";
 
 interface State {
-  records: Array<Record>;
+  records: Record[];
   type: number;
   comment: string;
 }
@@ -53,7 +53,10 @@ export default defineComponent({
     onMounted(getRecordsList(records));
 
     const addRecord = async () => {
-      await addRecordToFirestore(type.value, comment.value);
+      const addedRecord = await addRecordToFirestore(type.value, comment.value);
+      if (addedRecord) {
+        records.value.push(addedRecord);
+      }
     };
 
     return { records, type, comment, addRecord };

@@ -30,7 +30,7 @@ export default (records: Ref<Record[]>): (() => Promise<void>) => {
     if (uid) {
       // const userDb = doc(db, "users", uid);
       const userQuerySnapshot = await getDocs(collection(db, "users"));
-      const userIdList: Array<{ userId: string; userName: string }> = [];
+      const userIdList: { userId: string; userName: string }[] = [];
       userQuerySnapshot.forEach((userQuery) => {
         const userData = {
           userId: userQuery.id,
