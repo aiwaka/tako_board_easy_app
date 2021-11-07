@@ -1,10 +1,10 @@
 <template>
-  <div class="record">
-    <div class="who">{{ data.who }}</div>
-    <div class="date">{{ data.getDate() }}</div>
-    <div class="type">{{ data.getType() }}</div>
+  <tr class="record">
+    <td class="who">{{ data.who }}</td>
+    <td class="date">{{ data.getTime() }}</td>
+    <td class="type">{{ data.getType() }}</td>
     <button>x</button>
-  </div>
+  </tr>
 </template>
 
 <script lang="ts">
@@ -28,14 +28,10 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .record {
-  display: flex;
-  flex-wrap: nowrap;
-  justify-content: center;
-  width: 80%;
-  margin: auto auto;
+  width: 100%;
 
-  > div {
-    margin: auto 12px;
+  > td {
+    width: 200px;
   }
 }
 </style>

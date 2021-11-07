@@ -21,9 +21,19 @@
       </label>
       <button @click.prevent="addRecord">追加</button>
     </div>
-    <div>
-      <record-item v-for="record in records" :key="record.id" :data="record" />
-    </div>
+    <!-- <div>
+      <record-row v-for="record in records" :key="record.id" :data="record" />
+    </div> -->
+    <table class="record-table">
+      <thead>
+        <tr>
+          <th colspan="2">リスト</th>
+        </tr>
+      </thead>
+      <tbody>
+        <record-row v-for="record in records" :key="record.id" :data="record" />
+      </tbody>
+    </table>
   </div>
 </template>
 
@@ -32,7 +42,7 @@ import { defineComponent, reactive, onMounted, toRefs } from "vue";
 import { Record } from "@/modules/record";
 import getRecordsList from "@/composables/get-records-list";
 import addRecordToFirestore from "@/composables/add-record";
-import RecordItem from "@/components/RecordItem.vue";
+import RecordRow from "@/components/RecordRow.vue";
 
 interface State {
   records: Record[];
@@ -41,7 +51,7 @@ interface State {
 }
 
 export default defineComponent({
-  components: { RecordItem },
+  components: { RecordRow },
   setup() {
     const { records, type, comment } = toRefs(
       reactive<State>({
@@ -64,4 +74,9 @@ export default defineComponent({
 });
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.record-table {
+  width: 80%;
+  margin: auto;
+}
+</style>
