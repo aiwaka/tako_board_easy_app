@@ -1,6 +1,9 @@
 <template>
   <div class="record">
-    {{ data.who }}：{{ data.getDate() }}：{{ data.getType() }}
+    <div class="who">{{ data.who }}</div>
+    <div class="date">{{ data.getDate() }}</div>
+    <div class="type">{{ data.getType() }}</div>
+    <button>x</button>
   </div>
 </template>
 
@@ -23,4 +26,16 @@ export default defineComponent({
 });
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.record {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  width: 80%;
+  margin: auto auto;
+
+  > div {
+    margin: auto 12px;
+  }
+}
+</style>

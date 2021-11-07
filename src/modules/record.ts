@@ -1,7 +1,7 @@
 import { Timestamp } from "@firebase/firestore";
 
 const dayStr = ["日", "月", "火", "水", "木", "金", "土"];
-const typeStr = ["草", "ペレット", "トイレ"];
+const typeStr = ["草", "ペレット", "トイレ掃除"];
 
 export class Record {
   constructor(
@@ -14,7 +14,7 @@ export class Record {
   public getDate(): string {
     const dateObj: Date = this.date.toDate();
     const year = dateObj.getFullYear();
-    const month = dateObj.getMonth();
+    const month = dateObj.getMonth() + 1; // getMonthは0始まり
     const date = dateObj.getDate();
     const hour = dateObj.getHours();
     const minute = dateObj.getMinutes();

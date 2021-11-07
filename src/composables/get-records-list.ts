@@ -21,6 +21,7 @@ import { Record } from "@/modules/record";
 // };
 
 export default (records: Ref<Record[]>): (() => Promise<void>) => {
+  // リアクティブなRecordリストの参照を受け取って中身を追加する
   const getRecordsList = async () => {
     // fetch data from firestore
     const user = await getCurrentUser();
@@ -29,11 +30,15 @@ export default (records: Ref<Record[]>): (() => Promise<void>) => {
     if (uid) {
       // const userDb = doc(db, "users", uid);
       const userQuerySnapshot = await getDocs(collection(db, "users"));
-      const userIdList: Array<string> = [];
+      const userIdList: Array<{ userId: string; userName: string }> = [];
       userQuerySnapshot.forEach((userQuery) => {
-        userIdList.push(userQuery.id);
+        const userData = {
+          userId: userQuery.id,
+          userName: userQuery.data().name,
+        };
+        userIdList.push(userData);
       });
-      for (const userId of userIdList) {
+      for (const { userId, userName } of userIdList) {
         const recordsRef = doc(db, "users", userId);
         // .withConverter(recordConverter);
         const recordQuerySnapshot = await getDocs(
@@ -43,7 +48,7 @@ export default (records: Ref<Record[]>): (() => Promise<void>) => {
           const docData = doc.data();
           const newRec = new Record(
             doc.id,
-            userId,
+            userName,
             docData.type,
             docData.date,
             docData.comment
