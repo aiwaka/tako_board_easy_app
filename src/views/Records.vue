@@ -5,6 +5,7 @@
       <label>
         タイプ
         <select name="type" v-model="type">
+          <option value="-1">---</option>
           <option value="0">草</option>
           <option value="1">ペレット</option>
           <option value="2">トイレ掃除</option>
@@ -56,7 +57,7 @@ export default defineComponent({
     const { records, type, comment } = toRefs(
       reactive<State>({
         records: [],
-        type: 0,
+        type: -1,
         comment: "",
       })
     );

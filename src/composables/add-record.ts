@@ -6,6 +6,10 @@ export default async (
   type: number,
   comment: string
 ): Promise<Record | null> => {
+  if (type === -1) {
+    alert("レコードタイプを選んでください.");
+    return null;
+  }
   console.log("add record");
   const user = await getCurrentUser();
   const uid = user?.uid;
