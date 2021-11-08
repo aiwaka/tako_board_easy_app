@@ -1,4 +1,11 @@
-import { collection, getDocs, doc } from "@firebase/firestore";
+import {
+  collectionGroup,
+  getDocs,
+  query,
+  orderBy,
+  startAt,
+  endAt,
+} from "@firebase/firestore";
 import { Ref } from "vue";
 import { db, getCurrentUser } from "@/settings/firebase";
 import { Record } from "@/modules/record";
@@ -19,49 +26,40 @@ import { Record } from "@/modules/record";
 //     return new Record(data.type, data.date, data.comment);
 //   },
 // };
-interface UserData {
-  userId: string;
-  userName: string;
-}
 
-export default (records: Ref<Record[]>): (() => Promise<void>) => {
+export default (
+  records: Ref<Record[]>,
+  startDay: Date,
+  endDay: Date
+): (() => Promise<void>) => {
+  const targetDayStart = new Date(startDay.setHours(0, 0, 0, 0));
+  const targetDayEnd = new Date(endDay.setHours(24, 0, 0, 0));
   // リアクティブなRecordリストの参照を受け取って中身を追加する
   const getRecordsList = async () => {
     // fetch data from firestore
     const user = await getCurrentUser();
     const uid = user?.uid;
     console.log(uid);
-    if (!uid) {
-      return;
-    }
-    // const userDb = doc(db, "users", uid);
-    const userQuerySnapshot = await getDocs(collection(db, "users"));
-    const userIdList: UserData[] = [];
-    userQuerySnapshot.forEach((userQuery) => {
-      const userData = {
-        userId: userQuery.id,
-        userName: userQuery.data().name,
-      };
-      userIdList.push(userData);
-    });
-    for (const { userId, userName } of userIdList) {
-      const recordsRef = doc(db, "users", userId);
-      // .withConverter(recordConverter);
-      const recordQuerySnapshot = await getDocs(
-        collection(recordsRef, "records")
+    if (!uid) return;
+    // 降順の場合startとendが逆になる.
+    const recordsQuery = query(
+      collectionGroup(db, "records"),
+      orderBy("date", "desc"),
+      endAt(targetDayStart),
+      startAt(targetDayEnd)
+    );
+    const querySnapshot = await getDocs(recordsQuery);
+    querySnapshot.forEach((doc) => {
+      const docData = doc.data();
+      const newRec = new Record(
+        doc.id,
+        docData.name,
+        docData.type,
+        docData.date,
+        docData.comment
       );
-      recordQuerySnapshot.forEach((doc) => {
-        const docData = doc.data();
-        const newRec = new Record(
-          doc.id,
-          userName,
-          docData.type,
-          docData.date,
-          docData.comment
-        );
-        records.value.push(newRec);
-      });
-    }
+      records.value.push(newRec);
+    });
   };
   return getRecordsList;
 };

@@ -14,28 +14,28 @@ export default async (
   const user = await getCurrentUser();
   const uid = user?.uid;
   console.log(uid);
-  if (uid) {
-    const recordsRef = doc(db, "users", uid);
-    const userSnap = await getDoc(recordsRef);
-    if (!userSnap.exists()) return null;
-    const userName = userSnap.data().name;
-    const newRecordRef = doc(collection(recordsRef, "records"));
-    const currentDate = Timestamp.now();
-    const newRecordData = {
-      type,
-      comment,
-      date: currentDate,
-    };
-    await setDoc(newRecordRef, newRecordData);
-    const newRec = new Record(
-      newRecordRef.id,
-      userName,
-      type,
-      currentDate,
-      comment
-    );
-    return newRec;
+  if (!uid) {
+    return null;
   }
-
-  return null;
+  const recordsRef = doc(db, "users", uid);
+  const userSnap = await getDoc(recordsRef);
+  if (!userSnap.exists()) return null;
+  const userName = userSnap.data().name;
+  const newRecordRef = doc(collection(recordsRef, "records"));
+  const currentDate = Timestamp.now();
+  const newRecordData = {
+    type,
+    comment,
+    name: userName,
+    date: currentDate,
+  };
+  await setDoc(newRecordRef, newRecordData);
+  const newRec = new Record(
+    newRecordRef.id,
+    userName,
+    type,
+    currentDate,
+    comment
+  );
+  return newRec;
 };
