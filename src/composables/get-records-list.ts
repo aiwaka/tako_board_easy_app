@@ -53,6 +53,7 @@ export default (
       const docData = doc.data();
       const newRec = new Record(
         doc.id,
+        docData.userId,
         docData.name,
         docData.type,
         docData.date,

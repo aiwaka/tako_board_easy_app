@@ -6,6 +6,7 @@ const typeStr = ["草", "ペレット", "トイレ掃除"];
 export class Record {
   constructor(
     public id: string,
+    public userId: string,
     public who: string,
     public type: number,
     public date: Timestamp,

@@ -25,6 +25,7 @@ export default async (
   const currentDate = Timestamp.now();
   const newRecordData = {
     type,
+    userId: uid,
     comment,
     name: userName,
     date: currentDate,
@@ -32,6 +33,7 @@ export default async (
   await setDoc(newRecordRef, newRecordData);
   const newRec = new Record(
     newRecordRef.id,
+    uid,
     userName,
     type,
     currentDate,
