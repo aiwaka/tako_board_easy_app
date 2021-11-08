@@ -31,11 +31,16 @@
     <table class="record-table">
       <thead>
         <tr>
-          <th colspan="2">リスト</th>
+          <th colspan="6">リスト</th>
         </tr>
       </thead>
       <tbody>
-        <record-row v-for="record in records" :key="record.id" :data="record" />
+        <record-row
+          v-for="record in records"
+          :key="record.id"
+          :data="record"
+          @delete-record="deleteRecord"
+        />
       </tbody>
     </table>
   </div>
@@ -46,6 +51,7 @@ import { defineComponent, reactive, onMounted, computed, toRefs } from "vue";
 import { Record } from "@/modules/record";
 import getRecordsList from "@/composables/get-records-list";
 import addRecordToFirestore from "@/composables/add-record";
+import deleteRecordFromFirestore from "@/composables/delete-record";
 import RecordRow from "@/components/RecordRow.vue";
 
 interface State {
@@ -98,12 +104,19 @@ export default defineComponent({
         records.value.splice(0, 0, addedRecord);
       }
     };
+    const deleteRecord = async (id: string) => {
+      if (confirm("削除しますか？")) {
+        await deleteRecordFromFirestore(id);
+        await reAcquire();
+      }
+    };
 
     return {
       records,
       type,
       comment,
       addRecord,
+      deleteRecord,
       displayDay,
       startDate,
       endDate,
@@ -115,9 +128,9 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .record-table {
-  width: 80%;
+  width: 90%;
   height: auto;
-  margin: auto;
+  margin: 30px auto;
   overflow-x: scroll;
 }
 .record-container__day-selector {

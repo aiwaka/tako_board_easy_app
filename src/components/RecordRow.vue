@@ -5,13 +5,15 @@
     <td class="date">{{ data.getTime() }}</td>
     <td class="type">{{ data.getType() }}</td>
     <td class="comment">{{ data.comment }}</td>
-    <button :disabled="deleteDisabled">x</button>
+    <td class="button">
+      <button :disabled="deleteDisabled" @click="deleteRecord">x</button>
+    </td>
   </tr>
 </template>
 
 <script lang="ts">
 import { defineComponent, PropType, onMounted, toRefs, reactive } from "vue";
-// import { getCurrentUser } from "@/settings/firebase";
+import { getCurrentUser } from "@/settings/firebase";
 import { Record } from "@/modules/record";
 
 interface State {
@@ -25,21 +27,24 @@ export default defineComponent({
       required: true,
     },
   },
-  setup(props) {
+  emits: ["delete-record"],
+  setup(props, context) {
     const { deleteDisabled } = toRefs(
       reactive<State>({
         deleteDisabled: true,
       })
     );
     onMounted(async () => {
-      // console.log(props.data.who);
-      // const user = await getCurrentUser();
-      // const uid = user?.uid;
-      // if (uid) {
-      //   deleteDisabled.value = uid === props.data.who;
-      // }
+      const user = await getCurrentUser();
+      const uid = user?.uid;
+      if (uid) {
+        deleteDisabled.value = uid !== props.data.userId;
+      }
     });
-    return { deleteDisabled };
+    const deleteRecord = () => {
+      context.emit("delete-record", props.data.id);
+    };
+    return { deleteDisabled, deleteRecord };
   },
 });
 </script>
@@ -50,7 +55,12 @@ export default defineComponent({
 
   > td {
     width: 200px;
-    max-width: 30%;
+    max-width: 25%;
+    margin: auto 3%;
+    &.comment {
+      max-width: 40%;
+      width: 300px;
+    }
   }
 }
 </style>
