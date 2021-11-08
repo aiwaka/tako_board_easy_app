@@ -49,7 +49,8 @@ export default defineComponent({
       // eslint-disable-next-line no-console
       // console.log("try to login");
       signInWithEmailAndPassword(auth, state.userEmail, state.password)
-        .then((userCredential) => {
+        .then(() => {
+          // .then((userCredential) => {
           // const user = userCredential.user;
           if (route.query.redirect) {
             const redirect = route.query.redirect;
