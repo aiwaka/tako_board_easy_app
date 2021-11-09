@@ -1,7 +1,14 @@
 import { Timestamp } from "@firebase/firestore";
 
 const dayStr = ["日", "月", "火", "水", "木", "金", "土"];
-const typeStr = ["草", "ペレット", "トイレ掃除"];
+export const recordTypeStr = [
+  "草",
+  "ペレット",
+  "水",
+  "トイレ掃除",
+  "簡易トイレ掃除",
+  "散歩",
+];
 
 export class Record {
   constructor(
@@ -31,6 +38,6 @@ export class Record {
     return `${hour}時${minute}分${second}秒`;
   }
   public getType(): string {
-    return typeStr[this.type];
+    return recordTypeStr[this.type];
   }
 }

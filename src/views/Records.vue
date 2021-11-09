@@ -12,9 +12,14 @@
         タイプ
         <select name="type" v-model="type">
           <option value="-1">---</option>
-          <option value="0">草</option>
-          <option value="1">ペレット</option>
-          <option value="2">トイレ掃除</option>
+          <option
+            v-for="(type, index) in recordTypeStr"
+            :key="type"
+            :value="'' + index"
+          >
+            <!-- valueをバインドする際は-1に合わせるためstringに変換している. -->
+            {{ type }}
+          </option>
         </select>
       </label>
       <label>
@@ -48,7 +53,7 @@
 
 <script lang="ts">
 import { defineComponent, reactive, onMounted, toRefs } from "vue";
-import { Record } from "@/modules/record";
+import { Record, recordTypeStr } from "@/modules/record";
 import getRecordsList from "@/composables/get-records-list";
 import addRecordToFirestore from "@/composables/add-record";
 import deleteRecordFromFirestore from "@/composables/delete-record";
@@ -115,6 +120,7 @@ export default defineComponent({
 
     return {
       records,
+      recordTypeStr,
       type,
       comment,
       addRecord,
