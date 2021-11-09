@@ -47,7 +47,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, onMounted, computed, toRefs } from "vue";
+import { defineComponent, reactive, onMounted, toRefs } from "vue";
 import { Record } from "@/modules/record";
 import getRecordsList from "@/composables/get-records-list";
 import addRecordToFirestore from "@/composables/add-record";
@@ -63,31 +63,30 @@ interface State {
 }
 
 const today = new Date();
-const todayYear = today.getFullYear();
-const todayMonth = today.getMonth();
-const todayDate = today.getDate();
-const todayDay = today.getDay();
+const tempToday = new Date();
+const prevWeekDay = new Date(tempToday.setDate(tempToday.getDate() - 7));
+
+const toDateString = (date: Date): string => {
+  // input[type='date']で用いる日付文字列に変換する
+  return `${date.getFullYear()}-${("0" + (date.getMonth() + 1)).slice(-2)}-${(
+    "0" + date.getDate()
+  ).slice(-2)}`;
+};
 
 export default defineComponent({
   components: { RecordRow },
   setup() {
-    const defaultDateString = `${todayYear}-${("0" + (todayMonth + 1)).slice(
-      -2
-    )}-${("0" + todayDate).slice(-2)}`;
     const { records, type, comment, startDate, endDate } = toRefs(
       reactive<State>({
         records: [],
         type: -1,
         comment: "",
-        startDate: defaultDateString,
-        endDate: defaultDateString,
+        startDate: toDateString(prevWeekDay),
+        endDate: toDateString(today),
       })
     );
-    const displayDay = computed(
-      () => ["日", "月", "火", "水", "木", "金", "土"][todayDay]
-    );
 
-    onMounted(getRecordsList(records, new Date(), new Date()));
+    onMounted(getRecordsList(records, prevWeekDay, today));
 
     const reAcquire = async () => {
       records.value = [];
@@ -117,7 +116,6 @@ export default defineComponent({
       comment,
       addRecord,
       deleteRecord,
-      displayDay,
       startDate,
       endDate,
       reAcquire,
