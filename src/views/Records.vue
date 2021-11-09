@@ -1,6 +1,9 @@
 <template>
   <div class="record-container">
     <!-- <div>{{ state.records }}</div> -->
+    <div class="login-name-display">
+      {{ loginUserName }}としてログインしています。
+    </div>
     <div class="record-container__day-selector">
       <input type="date" v-model="startDate" />
       から
@@ -57,6 +60,7 @@ import { Record, recordTypeStr } from "@/modules/record";
 import getRecordsList from "@/composables/get-records-list";
 import addRecordToFirestore from "@/composables/add-record";
 import deleteRecordFromFirestore from "@/composables/delete-record";
+import getUserName from "@/composables/get-username";
 import RecordRow from "@/components/RecordRow.vue";
 
 interface State {
@@ -65,6 +69,7 @@ interface State {
   comment: string;
   startDate: string;
   endDate: string;
+  loginUserName: string;
 }
 
 const today = new Date();
@@ -81,17 +86,25 @@ const toDateString = (date: Date): string => {
 export default defineComponent({
   components: { RecordRow },
   setup() {
-    const { records, type, comment, startDate, endDate } = toRefs(
-      reactive<State>({
-        records: [],
-        type: "-1",
-        comment: "",
-        startDate: toDateString(prevWeekDay),
-        endDate: toDateString(today),
-      })
-    );
+    const { records, type, comment, startDate, endDate, loginUserName } =
+      toRefs(
+        reactive<State>({
+          records: [],
+          type: "-1",
+          comment: "",
+          startDate: toDateString(prevWeekDay),
+          endDate: toDateString(today),
+          loginUserName: "None",
+        })
+      );
 
     onMounted(getRecordsList(records, prevWeekDay, today));
+    onMounted(async () => {
+      const userName = await getUserName();
+      if (userName !== null) {
+        loginUserName.value = userName;
+      }
+    });
 
     const reAcquire = async () => {
       records.value = [];
@@ -128,17 +141,24 @@ export default defineComponent({
       startDate,
       endDate,
       reAcquire,
+      loginUserName,
     };
   },
 });
 </script>
 
 <style lang="scss" scoped>
+.login-name-display {
+  width: 80%;
+  margin: 16px auto;
+}
 .record-table {
   width: 90%;
   height: auto;
   margin: 30px auto;
   overflow-x: scroll;
+  border-collapse: separate;
+  border-spacing: 0px 30px;
 }
 .record-container__day-selector {
   display: flex;

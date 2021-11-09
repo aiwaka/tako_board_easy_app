@@ -34,8 +34,8 @@ export class Record {
     const dateObj: Date = this.date.toDate();
     const hour = dateObj.getHours();
     const minute = dateObj.getMinutes();
-    const second = dateObj.getSeconds();
-    return `${hour}時${minute}分${second}秒`;
+    // const second = dateObj.getSeconds();
+    return `${hour}時${minute}分`;
   }
   public getType(): string {
     return recordTypeStr[this.type];

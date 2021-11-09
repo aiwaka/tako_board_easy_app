@@ -50,13 +50,11 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-.record {
+tr.record {
   width: 100%;
-
   > td {
     width: 200px;
     max-width: 25%;
-    margin: auto 3%;
     &.comment {
       max-width: 40%;
       width: 300px;
