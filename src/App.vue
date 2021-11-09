@@ -6,6 +6,9 @@
     <router-link to="/records">Records</router-link>
   </div>
   <router-view />
+  <footer>
+    <span> &copy; Aiwaka 2021 </span>
+  </footer>
 </template>
 
 <style lang="scss">
@@ -28,5 +31,8 @@
       color: #42b983;
     }
   }
+}
+footer {
+  margin: 30px auto;
 }
 </style>
