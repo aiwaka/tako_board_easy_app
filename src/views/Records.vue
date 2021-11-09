@@ -56,7 +56,7 @@ import RecordRow from "@/components/RecordRow.vue";
 
 interface State {
   records: Record[];
-  type: number;
+  type: "-1" | "0" | "1" | "2";
   comment: string;
   startDate: string;
   endDate: string;
@@ -79,7 +79,7 @@ export default defineComponent({
     const { records, type, comment, startDate, endDate } = toRefs(
       reactive<State>({
         records: [],
-        type: -1,
+        type: "-1",
         comment: "",
         startDate: toDateString(prevWeekDay),
         endDate: toDateString(today),
@@ -98,7 +98,10 @@ export default defineComponent({
     };
 
     const addRecord = async () => {
-      const addedRecord = await addRecordToFirestore(type.value, comment.value);
+      const addedRecord = await addRecordToFirestore(
+        +type.value,
+        comment.value
+      );
       if (addedRecord) {
         records.value.splice(0, 0, addedRecord);
       }
