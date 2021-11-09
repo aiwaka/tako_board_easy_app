@@ -1,7 +1,7 @@
 <template>
   <div class="home">
     <h1>Tako Board</h1>
-    <p>たこのお世話管理アプリです。</p>
+    <p>ちゃこちゃんのお世話管理アプリ</p>
     <img alt="tako" src="@/assets/tako.png" />
   </div>
 </template>

@@ -2,6 +2,7 @@ import { Timestamp } from "@firebase/firestore";
 
 const dayStr = ["日", "月", "火", "水", "木", "金", "土"];
 export const recordTypeStr = [
+  "コメントのみ",
   "草",
   "ペレット",
   "水",
