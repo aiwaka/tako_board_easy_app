@@ -5,10 +5,10 @@
       {{ loginUserName }}としてログインしています。
     </div>
     <div class="record-container__day-selector">
-      <input type="date" v-model="startDate" />
+      <input type="date" v-model="startDate" @change="dateChanged" />
       から
-      <input type="date" v-model="endDate" />
-      <button @click="reAcquire">取得</button>
+      <input type="date" v-model="endDate" @change="dateChanged" />
+      <button @click="reAcquire" :disabled="fetchButtonDisabled">取得</button>
     </div>
     <div>
       <label>
@@ -34,7 +34,9 @@
           v-model="comment"
         />
       </label>
-      <button @click.prevent="addRecord">追加</button>
+      <button @click.prevent="addRecord" :disabled="addButtonDisabled">
+        追加
+      </button>
     </div>
     <table class="record-table">
       <thead>
@@ -55,7 +57,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, onMounted, toRefs } from "vue";
+import { defineComponent, reactive, onMounted, computed, toRefs } from "vue";
 import { Record, recordTypeStr } from "@/modules/record";
 import getRecordsList from "@/composables/get-records-list";
 import addRecordToFirestore from "@/composables/add-record";
@@ -65,11 +67,12 @@ import RecordRow from "@/components/RecordRow.vue";
 
 interface State {
   records: Record[];
-  type: "-1" | "0" | "1" | "2";
+  type: string;
   comment: string;
   startDate: string;
   endDate: string;
   loginUserName: string;
+  fetchButtonDisabled: boolean;
 }
 
 const today = new Date();
@@ -86,17 +89,31 @@ const toDateString = (date: Date): string => {
 export default defineComponent({
   components: { RecordRow },
   setup() {
-    const { records, type, comment, startDate, endDate, loginUserName } =
-      toRefs(
-        reactive<State>({
-          records: [],
-          type: "-1",
-          comment: "",
-          startDate: toDateString(prevWeekDay),
-          endDate: toDateString(today),
-          loginUserName: "None",
-        })
+    const {
+      records,
+      type,
+      comment,
+      startDate,
+      endDate,
+      loginUserName,
+      fetchButtonDisabled,
+    } = toRefs(
+      reactive<State>({
+        records: [],
+        type: "-1",
+        comment: "",
+        startDate: toDateString(prevWeekDay),
+        endDate: toDateString(today),
+        loginUserName: "None",
+        fetchButtonDisabled: true,
+      })
+    );
+
+    const addButtonDisabled = computed(() => {
+      return (
+        type.value === "-1" || (type.value === "0" && comment.value === "")
       );
+    });
 
     onMounted(getRecordsList(records, prevWeekDay, today));
     onMounted(async () => {
@@ -106,6 +123,10 @@ export default defineComponent({
       }
     });
 
+    const dateChanged = () => {
+      fetchButtonDisabled.value = false;
+    };
+
     const reAcquire = async () => {
       records.value = [];
       await getRecordsList(
@@ -113,6 +134,7 @@ export default defineComponent({
         new Date(startDate.value),
         new Date(endDate.value)
       )();
+      fetchButtonDisabled.value = true;
     };
 
     const addRecord = async () => {
@@ -122,6 +144,8 @@ export default defineComponent({
       );
       if (addedRecord) {
         records.value.splice(0, 0, addedRecord);
+        type.value = "-1";
+        comment.value = "";
       }
     };
     const deleteRecord = async (id: string) => {
@@ -142,6 +166,9 @@ export default defineComponent({
       endDate,
       reAcquire,
       loginUserName,
+      addButtonDisabled,
+      fetchButtonDisabled,
+      dateChanged,
     };
   },
 });

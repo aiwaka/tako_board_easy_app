@@ -9,6 +9,8 @@ export default async (
   if (type === -1) {
     alert("レコードタイプを選んでください.");
     return null;
+  } else if (type === 0 && comment === "") {
+    alert("コメントのみを送る場合はコメントが必須です。");
   }
   console.log("add record");
   const user = await getCurrentUser();
