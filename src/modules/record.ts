@@ -39,6 +39,10 @@ export class Record {
     return `${hour}時${minute}分`;
   }
   public getType(): string {
+    // コメントのみは表示しないことにする.
+    if (this.type === 0) {
+      return "";
+    }
     return recordTypeStr[this.type];
   }
 }
