@@ -124,3 +124,4 @@ node_modules
 *.sw?
 
 src/assets/*.JPG
+.firebase/
