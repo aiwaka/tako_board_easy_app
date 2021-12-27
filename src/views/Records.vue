@@ -10,31 +10,39 @@
       <input type="date" v-model="endDate" @change="dateChanged" />
       <button @click="reAcquire" :disabled="fetchButtonDisabled">取得</button>
     </div>
-    <div>
-      <label>
-        タイプ
-        <select name="type" v-model="type">
-          <option value="-1">---</option>
-          <option
-            v-for="(type, index) in recordTypeStr"
-            :key="type"
-            :value="'' + index"
-          >
-            <!-- valueをバインドする際は-1に合わせるためstringに変換している. -->
-            {{ type }}
-          </option>
-        </select>
-      </label>
-      <label>
-        コメント
-        <input
-          type="text"
-          name="comment"
-          placeholder="comment"
-          v-model="comment"
-        />
-      </label>
-      <button @click.prevent="addRecord" :disabled="addButtonDisabled">
+    <div class="input-box">
+      <div>
+        <label>
+          タイプ
+          <select name="type" v-model="type">
+            <option value="-1">---</option>
+            <option
+              v-for="(type, index) in recordTypeStr"
+              :key="type"
+              :value="'' + index"
+            >
+              <!-- valueをバインドする際は-1に合わせるためstringに変換している. -->
+              {{ type }}
+            </option>
+          </select>
+        </label>
+      </div>
+      <div>
+        <label>
+          コメント
+          <input
+            type="text"
+            name="comment"
+            placeholder="comment"
+            v-model="comment"
+          />
+        </label>
+      </div>
+      <button
+        class="add-button"
+        @click.prevent="addRecord"
+        :disabled="addButtonDisabled"
+      >
         追加
       </button>
     </div>
@@ -192,6 +200,18 @@ export default defineComponent({
   justify-content: center;
   > input {
     margin: auto 15px;
+  }
+}
+.record-container {
+  .input-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    > div {
+      width: 50%;
+      display: flex;
+      justify-content: left;
+    }
   }
 }
 </style>
