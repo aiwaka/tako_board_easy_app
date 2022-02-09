@@ -4,7 +4,6 @@ import { db, getCurrentUser } from "@/settings/firebase";
 export default async (): Promise<string | null> => {
   const user = await getCurrentUser();
   const uid = user?.uid;
-  console.log(uid);
   if (!uid) {
     return null;
   }

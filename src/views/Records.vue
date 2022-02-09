@@ -1,9 +1,5 @@
 <template>
   <div class="record-container">
-    <!-- <div>{{ state.records }}</div> -->
-    <div class="login-name-display">
-      {{ loginUserName }}としてログインしています。
-    </div>
     <div class="record-container__day-selector">
       <input type="date" v-model="startDate" @change="dateChanged" />
       から
@@ -70,7 +66,6 @@ import { Record, recordTypeStr } from "@/modules/record";
 import getRecordsList from "@/composables/get-records-list";
 import addRecordToFirestore from "@/composables/add-record";
 import deleteRecordFromFirestore from "@/composables/delete-record";
-import getUserName from "@/composables/get-username";
 import RecordRow from "@/components/RecordRow.vue";
 
 interface State {
@@ -79,7 +74,6 @@ interface State {
   comment: string;
   startDate: string;
   endDate: string;
-  loginUserName: string;
   fetchButtonDisabled: boolean;
 }
 
@@ -97,25 +91,17 @@ const toDateString = (date: Date): string => {
 export default defineComponent({
   components: { RecordRow },
   setup() {
-    const {
-      records,
-      type,
-      comment,
-      startDate,
-      endDate,
-      loginUserName,
-      fetchButtonDisabled,
-    } = toRefs(
-      reactive<State>({
-        records: [],
-        type: "-1",
-        comment: "",
-        startDate: toDateString(prevWeekDay),
-        endDate: toDateString(today),
-        loginUserName: "None",
-        fetchButtonDisabled: true,
-      })
-    );
+    const { records, type, comment, startDate, endDate, fetchButtonDisabled } =
+      toRefs(
+        reactive<State>({
+          records: [],
+          type: "-1",
+          comment: "",
+          startDate: toDateString(prevWeekDay),
+          endDate: toDateString(today),
+          fetchButtonDisabled: true,
+        })
+      );
 
     const addButtonDisabled = computed(() => {
       return (
@@ -124,12 +110,6 @@ export default defineComponent({
     });
 
     onMounted(getRecordsList(records, prevWeekDay, today));
-    onMounted(async () => {
-      const userName = await getUserName();
-      if (userName !== null) {
-        loginUserName.value = userName;
-      }
-    });
 
     const dateChanged = () => {
       fetchButtonDisabled.value = false;
@@ -173,7 +153,6 @@ export default defineComponent({
       startDate,
       endDate,
       reAcquire,
-      loginUserName,
       addButtonDisabled,
       fetchButtonDisabled,
       dateChanged,
@@ -183,10 +162,6 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-.login-name-display {
-  width: 80%;
-  margin: 16px auto;
-}
 .record-table {
   width: 90%;
   height: auto;

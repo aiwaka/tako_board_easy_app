@@ -12,10 +12,10 @@ export default async (
   } else if (type === 0 && comment === "") {
     alert("コメントのみを送る場合はコメントが必須です。");
   }
-  console.log("add record");
+  // console.log("add record");
   const user = await getCurrentUser();
   const uid = user?.uid;
-  console.log(uid);
+  // console.log(uid);
   if (!uid) {
     return null;
   }
