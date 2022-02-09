@@ -43,6 +43,13 @@ export class Record {
     if (this.type === 0) {
       return "";
     }
+    // トイレ掃除は長いので省略表記
+    if (this.type === 4) {
+      return "トイレ";
+    }
+    if (this.type === 5) {
+      return "トイレ(簡)";
+    }
     return recordTypeStr[this.type];
   }
 }

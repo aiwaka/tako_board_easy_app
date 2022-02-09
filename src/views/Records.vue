@@ -1,9 +1,5 @@
 <template>
   <div class="record-container">
-    <!-- <div>{{ state.records }}</div> -->
-    <div class="login-name-display">
-      {{ loginUserName }}としてログインしています。
-    </div>
     <div class="record-container__day-selector">
       <input type="date" v-model="startDate" @change="dateChanged" />
       から
@@ -38,6 +34,28 @@
           />
         </label>
       </div>
+
+      <!-- 任意時刻を指定できるボックス. 反映されるか否かはボックスを開いているか否かのみに依存する. -->
+      <div class="arbitrary-time-input">
+        <div v-if="!arbitTimeActive">
+          <div class="arbit-time-input__button" @click="toggleArbitTimeActive">
+            +
+          </div>
+          <span>任意時刻を入力する場合は+ボタンを押して開く</span>
+        </div>
+        <div v-else>
+          <div class="arbit-time-input__button" @click="toggleArbitTimeActive">
+            -
+          </div>
+          <span>
+            このボックスを開いたまま「追加」することで任意の時刻を反映できます。
+          </span>
+          <br />
+          <input type="date" v-model="inputDate" />
+          <input type="time" v-model="inputTime" />
+        </div>
+      </div>
+
       <button
         class="add-button"
         @click.prevent="addRecord"
@@ -70,8 +88,31 @@ import { Record, recordTypeStr } from "@/modules/record";
 import getRecordsList from "@/composables/get-records-list";
 import addRecordToFirestore from "@/composables/add-record";
 import deleteRecordFromFirestore from "@/composables/delete-record";
-import getUserName from "@/composables/get-username";
 import RecordRow from "@/components/RecordRow.vue";
+
+const today = new Date();
+const tempToday = new Date();
+const prevWeekDay = new Date(tempToday.setDate(tempToday.getDate() - 7));
+
+const fillZero = (num: number, digit: number): string => {
+  // digit桁になるように0埋めした文字列を返す. num, digitは整数の前提.
+  return ("0".repeat(digit - 1) + num).slice(-digit);
+};
+
+const toDateString = (date: Date): string => {
+  // input[type='date']で用いる日付文字列に変換する
+  return (
+    `${date.getFullYear()}-${fillZero(date.getMonth() + 1, 2)}` +
+    `-${fillZero(date.getDate(), 2)}`
+  );
+};
+
+const toTimeString = (time: Date): string => {
+  // input[type='time']で用いる時刻文字列に変換する. 秒は用いない.
+  return (
+    `${fillZero(time.getHours(), 2)}` + `:${fillZero(time.getMinutes(), 2)}`
+  );
+};
 
 interface State {
   records: Record[];
@@ -79,20 +120,11 @@ interface State {
   comment: string;
   startDate: string;
   endDate: string;
-  loginUserName: string;
   fetchButtonDisabled: boolean;
+  inputDate: string; // 任意時刻入力のための日付文字列
+  inputTime: string; // 上と同様の時刻文字列
+  arbitTimeActive: boolean; // 任意時刻入力が有効かどうか
 }
-
-const today = new Date();
-const tempToday = new Date();
-const prevWeekDay = new Date(tempToday.setDate(tempToday.getDate() - 7));
-
-const toDateString = (date: Date): string => {
-  // input[type='date']で用いる日付文字列に変換する
-  return `${date.getFullYear()}-${("0" + (date.getMonth() + 1)).slice(-2)}-${(
-    "0" + date.getDate()
-  ).slice(-2)}`;
-};
 
 export default defineComponent({
   components: { RecordRow },
@@ -103,8 +135,10 @@ export default defineComponent({
       comment,
       startDate,
       endDate,
-      loginUserName,
       fetchButtonDisabled,
+      inputDate,
+      inputTime,
+      arbitTimeActive,
     } = toRefs(
       reactive<State>({
         records: [],
@@ -112,8 +146,10 @@ export default defineComponent({
         comment: "",
         startDate: toDateString(prevWeekDay),
         endDate: toDateString(today),
-        loginUserName: "None",
         fetchButtonDisabled: true,
+        inputDate: toDateString(today),
+        inputTime: toTimeString(today),
+        arbitTimeActive: false,
       })
     );
 
@@ -124,15 +160,13 @@ export default defineComponent({
     });
 
     onMounted(getRecordsList(records, prevWeekDay, today));
-    onMounted(async () => {
-      const userName = await getUserName();
-      if (userName !== null) {
-        loginUserName.value = userName;
-      }
-    });
 
     const dateChanged = () => {
       fetchButtonDisabled.value = false;
+    };
+
+    const toggleArbitTimeActive = () => {
+      arbitTimeActive.value = !arbitTimeActive.value;
     };
 
     const reAcquire = async () => {
@@ -145,10 +179,18 @@ export default defineComponent({
       fetchButtonDisabled.value = true;
     };
 
+    const getArbitTimeAsDate = () => {
+      // 文字列からDateオブジェクトを生成（推奨されていないようなのでいい方法があれば変更する）
+      return new Date(
+        inputDate.value.toString() + " " + inputTime.value.toString()
+      );
+    };
+
     const addRecord = async () => {
       const addedRecord = await addRecordToFirestore(
         +type.value,
-        comment.value
+        comment.value,
+        arbitTimeActive.value ? getArbitTimeAsDate() : null
       );
       if (addedRecord) {
         records.value.splice(0, 0, addedRecord);
@@ -172,8 +214,11 @@ export default defineComponent({
       deleteRecord,
       startDate,
       endDate,
+      inputDate,
+      inputTime,
+      arbitTimeActive,
+      toggleArbitTimeActive,
       reAcquire,
-      loginUserName,
       addButtonDisabled,
       fetchButtonDisabled,
       dateChanged,
@@ -183,9 +228,20 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-.login-name-display {
-  width: 80%;
-  margin: 16px auto;
+.arbitrary-time-input {
+  border: 1px dashed #777777;
+  padding: 1rem 0.6rem;
+  .arbit-time-input__button {
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    line-height: 1rem;
+    border: 1px solid #000000;
+    cursor: pointer;
+  }
+  span {
+    margin: 0 0.5rem;
+  }
 }
 .record-table {
   width: 90%;
