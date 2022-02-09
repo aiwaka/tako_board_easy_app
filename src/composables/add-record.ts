@@ -4,7 +4,8 @@ import { Record } from "@/modules/record";
 
 export default async (
   type: number,
-  comment: string
+  comment: string,
+  inputTime: Date | null = null
 ): Promise<Record | null> => {
   if (type === -1) {
     alert("レコードタイプを選んでください.");
@@ -24,7 +25,10 @@ export default async (
   if (!userSnap.exists()) return null;
   const userName = userSnap.data().name;
   const newRecordRef = doc(collection(recordsRef, "records"));
-  const currentDate = Timestamp.now();
+  // 時刻が指定されているならそれを用い, そうでなければ現在時刻を取得して用いる.
+  const currentDate = inputTime
+    ? Timestamp.fromDate(inputTime)
+    : Timestamp.now();
   const newRecordData = {
     type,
     userId: uid,
@@ -32,6 +36,7 @@ export default async (
     name: userName,
     date: currentDate,
   };
+  // newRecordRefに今追加したレコードのオブジェクトをセットしてリロードなしで使えるようにする.
   await setDoc(newRecordRef, newRecordData);
   const newRec = new Record(
     newRecordRef.id,
