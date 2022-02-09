@@ -22,10 +22,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, onMounted } from "vue";
+import { defineComponent, reactive } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { signInWithEmailAndPassword, signOut } from "firebase/auth";
-import { auth, getCurrentUser } from "@/settings/firebase";
+import { auth } from "@/settings/firebase";
 
 interface State {
   userEmail: string;
@@ -80,18 +80,6 @@ export default defineComponent({
           });
       }
     };
-
-    onMounted(async () => {
-      const currentUser = await getCurrentUser();
-      state.loggedIn = !!currentUser;
-      if (state.loggedIn) {
-        // eslint-disable-next-line no-console
-        console.log(`user:${currentUser}`);
-      } else {
-        // eslint-disable-next-line no-console
-        console.log("not logged in");
-      }
-    });
 
     return { state, login, logout };
   },

@@ -39,7 +39,6 @@ export default (
     // fetch data from firestore
     const user = await getCurrentUser();
     const uid = user?.uid;
-    console.log(uid);
     if (!uid) return;
     // 降順の場合startとendが逆になる.
     const recordsQuery = query(

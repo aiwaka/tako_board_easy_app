@@ -1,6 +1,5 @@
 <template>
   <div class="record-container">
-    <!-- <div>{{ state.records }}</div> -->
     <div class="login-name-display">
       {{ loginUserName }}としてログインしています。
     </div>
