@@ -48,11 +48,25 @@
             -
           </div>
           <span>
-            このボックスを開いたまま「追加」することで任意の時刻を反映できます。
+            この欄を開いたまま「追加」することで任意の時刻を反映できます。
           </span>
           <br />
-          <input type="date" v-model="inputDate" />
-          <input type="time" v-model="inputTime" />
+          <label>日付</label>
+          <datepicker
+            class="date-picker"
+            startingView="day"
+            minimumView="day"
+            inputFormat="yyyy-MM-dd"
+            v-model="pickedDate"
+          />
+          <label>時刻</label>
+          <datepicker
+            class="date-picker"
+            startingView="time"
+            minimumView="time"
+            inputFormat="HH:mm"
+            v-model="pickedTime"
+          />
         </div>
       </div>
 
@@ -89,6 +103,7 @@ import getRecordsList from "@/composables/get-records-list";
 import addRecordToFirestore from "@/composables/add-record";
 import deleteRecordFromFirestore from "@/composables/delete-record";
 import RecordRow from "@/components/RecordRow.vue";
+import Datepicker from "vue3-datepicker";
 
 const today = new Date();
 const tempToday = new Date();
@@ -123,11 +138,13 @@ interface State {
   fetchButtonDisabled: boolean;
   inputDate: string; // 任意時刻入力のための日付文字列
   inputTime: string; // 上と同様の時刻文字列
+  pickedDate: Date;
+  pickedTime: Date;
   arbitTimeActive: boolean; // 任意時刻入力が有効かどうか
 }
 
 export default defineComponent({
-  components: { RecordRow },
+  components: { RecordRow, datepicker: Datepicker },
   setup() {
     const {
       records,
@@ -138,6 +155,8 @@ export default defineComponent({
       fetchButtonDisabled,
       inputDate,
       inputTime,
+      pickedDate,
+      pickedTime,
       arbitTimeActive,
     } = toRefs(
       reactive<State>({
@@ -149,6 +168,8 @@ export default defineComponent({
         fetchButtonDisabled: true,
         inputDate: toDateString(today),
         inputTime: toTimeString(today),
+        pickedDate: new Date(),
+        pickedTime: new Date(),
         arbitTimeActive: false,
       })
     );
@@ -162,6 +183,7 @@ export default defineComponent({
     onMounted(getRecordsList(records, prevWeekDay, today));
 
     const dateChanged = () => {
+      // 表示日が初期状態から変更された場合, レコード再取得ボタンを有効化する.
       fetchButtonDisabled.value = false;
     };
 
@@ -180,15 +202,21 @@ export default defineComponent({
     };
 
     const getArbitTimeAsDate = () => {
-      // 文字列からDateオブジェクトを生成（推奨されていないようなのでいい方法があれば変更する）
+      // 外部パッケージを用いて取得した日時を一つのDateオブジェクトにして返す.
+      const date = pickedDate.value;
+      const time = pickedTime.value;
       return new Date(
-        inputDate.value.toString() + " " + inputTime.value.toString()
+        date.getFullYear(),
+        date.getMonth(),
+        date.getDate(),
+        time.getHours(),
+        time.getMinutes()
       );
     };
 
     const addRecord = async () => {
       const addedRecord = await addRecordToFirestore(
-        +type.value,
+        +type.value, // +演算子で数値的な文字列を数値に変換する.
         comment.value,
         arbitTimeActive.value ? getArbitTimeAsDate() : null
       );
@@ -222,6 +250,8 @@ export default defineComponent({
       addButtonDisabled,
       fetchButtonDisabled,
       dateChanged,
+      pickedDate,
+      pickedTime,
     };
   },
 });
@@ -241,6 +271,9 @@ export default defineComponent({
   }
   span {
     margin: 0 0.5rem;
+  }
+  .date-picker input {
+    width: 7rem;
   }
 }
 .record-table {
