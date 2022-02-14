@@ -7,7 +7,7 @@
   </div>
   <router-view />
   <footer>
-    <span> &copy; Aiwaka 2021 </span>
+    <span> &copy; Aiwaka 2022 </span>
   </footer>
 </template>
 
