@@ -32,21 +32,21 @@ import { auth } from "@/settings/firebase";
 import getUserName from "@/composables/get-username";
 
 interface State {
-  userEmail: string;
-  password: string;
   errorMessage: string;
   loggedIn: boolean;
   loginUserName: string;
+  password: string;
+  userEmail: string;
 }
 
 export default defineComponent({
   setup() {
     const state = reactive<State>({
-      userEmail: "",
-      password: "",
       errorMessage: "",
       loggedIn: false,
       loginUserName: "",
+      password: "",
+      userEmail: "",
     });
     const router = useRouter();
     const route = useRoute();
@@ -95,7 +95,7 @@ export default defineComponent({
       }
     };
 
-    return { state, login, logout };
+    return { login, logout, state };
   },
 });
 </script>

@@ -135,47 +135,47 @@ const toTimeString = (time: Date): string => {
 };
 
 interface State {
-  records: Record[];
-  type: string;
+  arbitTimeActive: boolean; // 任意時刻入力が有効かどうか
   comment: string;
-  startDate: string;
   endDate: string;
   fetchButtonDisabled: boolean;
   inputDate: string; // 任意時刻入力のための日付文字列
   inputTime: string; // 上と同様の時刻文字列
   pickedDate: Date;
   pickedTime: Date;
-  arbitTimeActive: boolean; // 任意時刻入力が有効かどうか
+  records: Record[];
+  startDate: string;
+  type: string;
 }
 
 export default defineComponent({
   components: { RecordRow, FileUploaderVue, datepicker: Datepicker },
   setup() {
     const {
-      records,
-      type,
+      arbitTimeActive,
       comment,
-      startDate,
       endDate,
       fetchButtonDisabled,
       inputDate,
       inputTime,
       pickedDate,
       pickedTime,
-      arbitTimeActive,
+      records,
+      startDate,
+      type,
     } = toRefs(
       reactive<State>({
-        records: [],
-        type: "-1",
+        arbitTimeActive: false,
         comment: "",
-        startDate: toDateString(prevWeekDay),
         endDate: toDateString(today),
         fetchButtonDisabled: true,
         inputDate: toDateString(today),
         inputTime: toTimeString(today),
         pickedDate: new Date(),
         pickedTime: new Date(),
-        arbitTimeActive: false,
+        records: [],
+        startDate: toDateString(prevWeekDay),
+        type: "-1",
       })
     );
 
@@ -239,24 +239,24 @@ export default defineComponent({
     };
 
     return {
-      records,
-      recordTypeStr,
-      type,
-      comment,
+      addButtonDisabled,
       addRecord,
+      arbitTimeActive,
+      comment,
+      dateChanged,
       deleteRecord,
-      startDate,
       endDate,
+      fetchButtonDisabled,
       inputDate,
       inputTime,
-      arbitTimeActive,
-      toggleArbitTimeActive,
-      reAcquire,
-      addButtonDisabled,
-      fetchButtonDisabled,
-      dateChanged,
       pickedDate,
       pickedTime,
+      reAcquire,
+      records,
+      recordTypeStr,
+      startDate,
+      toggleArbitTimeActive,
+      type,
     };
   },
 });

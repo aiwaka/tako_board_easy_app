@@ -82,12 +82,12 @@ export default defineComponent({
       context.emit("delete-record", props.data.id);
     };
     return {
-      deleteDisabled,
-      showWholeComment,
       commentIsLong,
-      shortComment,
-      toggleShowComment,
+      deleteDisabled,
       deleteRecord,
+      shortComment,
+      showWholeComment,
+      toggleShowComment,
     };
   },
 });
