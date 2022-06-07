@@ -56,7 +56,8 @@ export default (
         docData.name,
         docData.type,
         docData.date,
-        docData.comment
+        docData.comment,
+        docData.imageName === undefined ? null : docData.imageName
       );
       records.value.push(newRec);
     });

@@ -18,7 +18,8 @@ export class Record {
     public who: string,
     public type: number,
     public date: Timestamp,
-    public comment: string
+    public comment: string,
+    public imageName: string | null = null
   ) {}
   public getDate(): string {
     const dateObj: Date = this.date.toDate();
