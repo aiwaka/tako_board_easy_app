@@ -71,6 +71,9 @@
         </div>
       </div>
 
+      <!-- 画像追加コンテナ -->
+      <file-uploader-vue />
+
       <button
         class="add-button"
         @click.prevent="addRecord"
@@ -104,6 +107,7 @@ import getRecordsList from "@/composables/get-records-list";
 import addRecordToFirestore from "@/composables/add-record";
 import deleteRecordFromFirestore from "@/composables/delete-record";
 import RecordRow from "@/components/RecordRow.vue";
+import FileUploaderVue from "@/components/FileUploader.vue";
 import Datepicker from "vue3-datepicker";
 
 const today = new Date();
@@ -145,7 +149,7 @@ interface State {
 }
 
 export default defineComponent({
-  components: { RecordRow, datepicker: Datepicker },
+  components: { RecordRow, FileUploaderVue, datepicker: Datepicker },
   setup() {
     const {
       records,
