@@ -14,6 +14,13 @@
     <td class="comment" v-else @click="toggleShowComment">
       {{ data.comment }}
     </td>
+    <td class="image">
+      <p v-if="data.imageName">
+        <modal-window-vue :image-name="data.imageName">
+          画像あり
+        </modal-window-vue>
+      </p>
+    </td>
     <td class="button">
       <button :disabled="deleteDisabled" @click="deleteRecord">x</button>
     </td>
@@ -31,6 +38,7 @@ import {
 } from "vue";
 import { getCurrentUser } from "@/settings/firebase";
 import { Record } from "@/modules/record";
+import ModalWindowVue from "@/components/ModalWindow.vue";
 
 interface State {
   deleteDisabled: boolean;
@@ -38,6 +46,7 @@ interface State {
 }
 
 export default defineComponent({
+  components: { ModalWindowVue },
   props: {
     data: {
       type: Object as PropType<Record>,
@@ -73,12 +82,12 @@ export default defineComponent({
       context.emit("delete-record", props.data.id);
     };
     return {
-      deleteDisabled,
-      showWholeComment,
       commentIsLong,
-      shortComment,
-      toggleShowComment,
+      deleteDisabled,
       deleteRecord,
+      shortComment,
+      showWholeComment,
+      toggleShowComment,
     };
   },
 });
@@ -89,10 +98,14 @@ tr.record {
   width: 100%;
   > td {
     width: 200px;
-    max-width: 25%;
+    max-width: 22%;
     &.comment {
-      max-width: 40%;
+      max-width: 35%;
       width: 300px;
+    }
+    &.button {
+      max-width: 10%;
+      width: 3rem;
     }
   }
 }

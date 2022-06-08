@@ -5,7 +5,8 @@ import { Record } from "@/modules/record";
 export default async (
   type: number,
   comment: string,
-  inputTime: Date | null = null
+  inputTime: Date | null = null,
+  imageName = ""
 ): Promise<Record | null> => {
   if (type === -1) {
     alert("レコードタイプを選んでください.");
@@ -29,12 +30,14 @@ export default async (
   const currentDate = inputTime
     ? Timestamp.fromDate(inputTime)
     : Timestamp.now();
+
   const newRecordData = {
     type,
     userId: uid,
     comment,
     name: userName,
     date: currentDate,
+    imageName,
   };
   // newRecordRefに今追加したレコードのオブジェクトをセットしてリロードなしで使えるようにする.
   await setDoc(newRecordRef, newRecordData);
@@ -44,7 +47,8 @@ export default async (
     userName,
     type,
     currentDate,
-    comment
+    comment,
+    imageName
   );
   return newRec;
 };
