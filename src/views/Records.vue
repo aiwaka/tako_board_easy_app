@@ -1,11 +1,7 @@
 <template>
   <div class="record-container">
-    <div class="record-container__day-selector">
-      <input type="date" v-model="startDate" @change="dateChanged" />
-      から
-      <input type="date" v-model="endDate" @change="dateChanged" />
-      <button @click="reAcquire" :disabled="fetchButtonDisabled">取得</button>
-    </div>
+    <date-selector-vue :fetch-callback="acquireList" />
+
     <div class="input-box">
       <div>
         <label>
@@ -106,86 +102,60 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, onMounted, computed, toRefs } from "vue";
+import { defineComponent, reactive, computed, toRefs } from "vue";
 import { Record, recordTypeStr } from "@/modules/record";
 import getRecordsList from "@/composables/get-records-list";
 import addRecordToFirestore from "@/composables/add-record";
 import deleteRecordFromFirestore from "@/composables/delete-record";
 import { uploadImageToFirebase } from "@/composables/image-upload";
 import RecordRow from "@/components/RecordRow.vue";
+import DateSelectorVue from "@/components/DateSelector.vue";
 import FileUploaderVue from "@/components/FileUploader.vue";
+import { toDateString, toTimeString } from "@/composables/utils";
 import Datepicker from "vue3-datepicker";
-
-const today = new Date();
-const tempToday = new Date();
-const prevWeekDay = new Date(tempToday.setDate(tempToday.getDate() - 7));
-
-const fillZero = (num: number, digit: number): string => {
-  // digit桁になるように0埋めした文字列を返す. num, digitは整数の前提.
-  return ("0".repeat(digit - 1) + num).slice(-digit);
-};
-
-const toDateString = (date: Date): string => {
-  // input[type='date']で用いる日付文字列に変換する
-  return (
-    `${date.getFullYear()}-${fillZero(date.getMonth() + 1, 2)}` +
-    `-${fillZero(date.getDate(), 2)}`
-  );
-};
-
-const toTimeString = (time: Date): string => {
-  // input[type='time']で用いる時刻文字列に変換する. 秒は用いない.
-  return (
-    `${fillZero(time.getHours(), 2)}` + `:${fillZero(time.getMinutes(), 2)}`
-  );
-};
 
 interface State {
   arbitTimeActive: boolean; // 任意時刻入力が有効かどうか
   comment: string;
-  endDate: string;
-  fetchButtonDisabled: boolean;
   imageObj: File | null;
   inputDate: string; // 任意時刻入力のための日付文字列
   inputTime: string; // 上と同様の時刻文字列
   pickedDate: Date;
   pickedTime: Date;
   records: Record[];
-  startDate: string;
   type: string;
   uploadStatus: number;
 }
 
 export default defineComponent({
-  components: { RecordRow, FileUploaderVue, datepicker: Datepicker },
+  components: {
+    RecordRow,
+    FileUploaderVue,
+    datepicker: Datepicker,
+    DateSelectorVue,
+  },
   setup() {
     const {
       arbitTimeActive,
       comment,
-      endDate,
-      fetchButtonDisabled,
       imageObj,
       inputDate,
       inputTime,
       pickedDate,
       pickedTime,
       records,
-      startDate,
       type,
       uploadStatus,
     } = toRefs(
       reactive<State>({
         arbitTimeActive: false,
         comment: "",
-        endDate: toDateString(today),
-        fetchButtonDisabled: true,
         imageObj: null,
-        inputDate: toDateString(today),
-        inputTime: toTimeString(today),
+        inputDate: toDateString(new Date()),
+        inputTime: toTimeString(new Date()),
         pickedDate: new Date(),
         pickedTime: new Date(),
         records: [],
-        startDate: toDateString(prevWeekDay),
         type: "-1",
         uploadStatus: 0,
       })
@@ -197,25 +167,14 @@ export default defineComponent({
       );
     });
 
-    onMounted(getRecordsList(records, prevWeekDay, today));
-
-    const dateChanged = () => {
-      // 表示日が初期状態から変更された場合, レコード再取得ボタンを有効化する.
-      fetchButtonDisabled.value = false;
-    };
-
     const toggleArbitTimeActive = () => {
       arbitTimeActive.value = !arbitTimeActive.value;
     };
 
-    const reAcquire = async () => {
+    // 開始終了日付を指定してその期間のレコードリストを取得する.
+    const acquireList = async (startDate: string, endDate: string) => {
       records.value = [];
-      await getRecordsList(
-        records,
-        new Date(startDate.value),
-        new Date(endDate.value)
-      )();
-      fetchButtonDisabled.value = true;
+      await getRecordsList(records, new Date(startDate), new Date(endDate))();
     };
 
     const getArbitTimeAsDate = () => {
@@ -267,19 +226,20 @@ export default defineComponent({
     const deleteRecord = async (id: string) => {
       if (confirm("削除しますか？")) {
         await deleteRecordFromFirestore(id);
-        await reAcquire();
+        const index = records.value.findIndex((rec) => rec.id === id);
+        if (index !== -1) {
+          records.value.splice(index, 1);
+        }
       }
     };
 
     return {
+      acquireList,
       addButtonDisabled,
       addRecord,
       arbitTimeActive,
       comment,
-      dateChanged,
       deleteRecord,
-      endDate,
-      fetchButtonDisabled,
       imageUploaded,
       imageDeleted,
       inputDate,
@@ -287,10 +247,8 @@ export default defineComponent({
       onUploaderReset,
       pickedDate,
       pickedTime,
-      reAcquire,
       records,
       recordTypeStr,
-      startDate,
       toggleArbitTimeActive,
       type,
       uploadStatus,
