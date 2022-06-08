@@ -1,13 +1,15 @@
 <template>
   <div class="image-uploader-container">
-    <label for="image-uploader">添付画像を1枚選択</label>
-    <input
-      name="image-uploader"
-      class="image-uploader"
-      type="file"
-      accept="image/*"
-      @change="onImageUpload"
-    />
+    <div>
+      <label for="image-uploader">添付画像を1枚選択</label>
+      <input
+        name="image-uploader"
+        class="image-uploader"
+        type="file"
+        accept="image/*"
+        @change="onImageUpload"
+      />
+    </div>
     <div v-if="uploadedImageURL !== ''">
       <img class="image-preview" :src="uploadedImageURL" alt="" />
     </div>
@@ -100,6 +102,11 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+.image-uploader-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 .image-preview {
   border: 2px solid #777777;
   width: 13rem;
