@@ -14,6 +14,7 @@
 - レコードの削除は投稿した本人のみが可能.
 - 記録を付けるのを忘れても任意の時刻を簡単に入力可能.
 - 長いコメントは自動で折りたたまれ, クリックすると全文を見られる.
+- 画像投稿機能を追加. Firebase Storage に保存され各レコードと紐付けられる.
 
 ## 画像
 
@@ -26,7 +27,7 @@
 
 ## 使用技術
 
-- Firebase（Firestore, Authentication）
+- Firebase（Firestore, Authentication, Storage）
 - Vue.js 3（Composition API）
 - Typescript
 - SCSS

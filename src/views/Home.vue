@@ -1,7 +1,7 @@
 <template>
   <div class="home">
     <h1>Tako Board</h1>
-    <div class="version">Ver 0.2.1</div>
+    <div class="version">Ver 0.3.0</div>
     <p>ちゃこちゃんのお世話管理アプリ</p>
     <img alt="tako" src="@/assets/tako.png" />
   </div>
