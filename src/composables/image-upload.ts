@@ -3,26 +3,23 @@ import { Ref } from "vue";
 import { storage } from "@/settings/firebase";
 import { generateUuid4 } from "@/composables/uuid4";
 
-export const uploadImage = async (
-  // eslint-disable-next-line
-  payload: any,
-  uploadProgress: Ref<number>,
-  uploadStatus: Ref<number>,
-  fileLinkRef: Ref<string>
-): Promise<void> => {
-  console.log(payload.srcElement.files[0]);
-  const file: File = payload.srcElement.files[0];
-  const randomFileName = generateUuid4() + "_" + file.name;
+export const uploadImageToFirebase = (
+  imageFile: File,
+  uploadProgress: Ref<number> | null = null
+): string => {
+  const randomFileName = generateUuid4() + "_" + imageFile.name;
   const imageRef = ref(storage, "images/" + randomFileName);
 
-  const uploadTask = uploadBytesResumable(imageRef, file);
+  const uploadTask = uploadBytesResumable(imageRef, imageFile);
   uploadTask.on(
     "state_changed",
     (snapshot) => {
       const percentage =
         Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 10000) /
         100;
-      uploadProgress.value = percentage;
+      if (uploadProgress !== null) {
+        uploadProgress.value = percentage;
+      }
     },
     (err) => {
       // エラー処理
@@ -31,11 +28,10 @@ export const uploadImage = async (
     },
     () => {
       // 終了処理
-      getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-        console.log("File available at", downloadURL);
-        uploadStatus.value = 2;
-        fileLinkRef.value = downloadURL;
+      getDownloadURL(uploadTask.snapshot.ref).then(() => {
+        // console.log("File available at", downloadURL);
       });
     }
   );
+  return randomFileName;
 };

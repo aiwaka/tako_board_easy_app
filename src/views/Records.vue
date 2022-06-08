@@ -72,7 +72,12 @@
       </div>
 
       <!-- 画像追加コンテナ -->
-      <file-uploader-vue />
+      <file-uploader-vue
+        ref="uploaderRef"
+        :uploadWatcher="uploadStatus"
+        @uploaded="imageUploaded"
+        @reset-finished="onUploaderReset"
+      />
 
       <button
         class="add-button"
@@ -106,6 +111,7 @@ import { Record, recordTypeStr } from "@/modules/record";
 import getRecordsList from "@/composables/get-records-list";
 import addRecordToFirestore from "@/composables/add-record";
 import deleteRecordFromFirestore from "@/composables/delete-record";
+import { uploadImageToFirebase } from "@/composables/image-upload";
 import RecordRow from "@/components/RecordRow.vue";
 import FileUploaderVue from "@/components/FileUploader.vue";
 import Datepicker from "vue3-datepicker";
@@ -139,6 +145,7 @@ interface State {
   comment: string;
   endDate: string;
   fetchButtonDisabled: boolean;
+  imageObj: File | null;
   inputDate: string; // 任意時刻入力のための日付文字列
   inputTime: string; // 上と同様の時刻文字列
   pickedDate: Date;
@@ -146,6 +153,7 @@ interface State {
   records: Record[];
   startDate: string;
   type: string;
+  uploadStatus: number;
 }
 
 export default defineComponent({
@@ -156,6 +164,7 @@ export default defineComponent({
       comment,
       endDate,
       fetchButtonDisabled,
+      imageObj,
       inputDate,
       inputTime,
       pickedDate,
@@ -163,12 +172,14 @@ export default defineComponent({
       records,
       startDate,
       type,
+      uploadStatus,
     } = toRefs(
       reactive<State>({
         arbitTimeActive: false,
         comment: "",
         endDate: toDateString(today),
         fetchButtonDisabled: true,
+        imageObj: null,
         inputDate: toDateString(today),
         inputTime: toTimeString(today),
         pickedDate: new Date(),
@@ -176,6 +187,7 @@ export default defineComponent({
         records: [],
         startDate: toDateString(prevWeekDay),
         type: "-1",
+        uploadStatus: 0,
       })
     );
 
@@ -219,18 +231,39 @@ export default defineComponent({
       );
     };
 
+    const imageUploaded = (file: File) => {
+      imageObj.value = file;
+    };
+    const imageDeleted = () => {
+      imageObj.value = null;
+    };
+
     const addRecord = async () => {
+      // 画像がある場合は追加
+      uploadStatus.value = 1;
+      let imageName = "";
+      if (imageObj.value !== null) {
+        imageName = uploadImageToFirebase(imageObj.value);
+      }
       const addedRecord = await addRecordToFirestore(
         +type.value, // +演算子で数値的な文字列を数値に変換する.
         comment.value,
-        arbitTimeActive.value ? getArbitTimeAsDate() : null
+        arbitTimeActive.value ? getArbitTimeAsDate() : null,
+        imageName
       );
       if (addedRecord) {
         records.value.splice(0, 0, addedRecord);
         type.value = "-1";
         comment.value = "";
+        imageObj.value = null;
+        uploadStatus.value = 2;
       }
     };
+
+    const onUploaderReset = () => {
+      uploadStatus.value = 0;
+    };
+
     const deleteRecord = async (id: string) => {
       if (confirm("削除しますか？")) {
         await deleteRecordFromFirestore(id);
@@ -247,8 +280,11 @@ export default defineComponent({
       deleteRecord,
       endDate,
       fetchButtonDisabled,
+      imageUploaded,
+      imageDeleted,
       inputDate,
       inputTime,
+      onUploaderReset,
       pickedDate,
       pickedTime,
       reAcquire,
@@ -257,6 +293,7 @@ export default defineComponent({
       startDate,
       toggleArbitTimeActive,
       type,
+      uploadStatus,
     };
   },
 });

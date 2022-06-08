@@ -8,10 +8,10 @@
       accept="image/*"
       @change="onImageUpload"
     />
-    <div v-if="uploadStatus == 2">
-      <img class="image-preview" :src="uploadedImage" alt="" />
+    <div v-if="uploadedImageURL !== ''">
+      <img class="image-preview" :src="uploadedImageURL" alt="" />
     </div>
-    <div class="progress-container" v-if="uploadStatus == 1">
+    <!-- <div class="progress-container" v-if="uploadStatus == 1">
       <div class="progress-bar-container">
         <div
           class="progress-bar"
@@ -19,56 +19,81 @@
         ></div>
       </div>
       <p>{{ uploadProgress }}%</p>
-    </div>
+    </div> -->
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, toRefs } from "vue";
-import { uploadImage } from "@/composables/image-upload";
+import { defineComponent, reactive, toRefs, watch } from "vue";
 
 interface State {
-  fileLinkURL: string;
-  uploadedImage: string;
-  uploadProgress: number;
-  uploadStatus: number; // 0: 上げていない, 1: 動作中, 2: 終了
+  uploadedImageURL: string;
 }
 
 export default defineComponent({
-  setup() {
-    const { fileLinkURL, uploadedImage, uploadProgress, uploadStatus } = toRefs(
+  emits: ["uploaded", "reset-finished"],
+  props: {
+    // 外部の状態変化を監視するためのprop
+    uploadWatcher: {
+      type: Number,
+      required: true,
+    },
+    // uploadProgress: {
+    //   type: Number,
+    //   required: true,
+    // },
+  },
+  setup(props, context) {
+    const { uploadedImageURL } = toRefs(
       reactive<State>({
-        fileLinkURL: "",
-        uploadedImage: "",
-        uploadProgress: 0,
-        uploadStatus: 0,
+        uploadedImageURL: "",
       })
     );
+    const { uploadWatcher } = toRefs(props);
+
+    watch(uploadWatcher, (status, prevStatus) => {
+      // statusが実行中から終了に変化したら画像を消去する.
+      if (prevStatus === 1 && status == 2) {
+        reset();
+      }
+    });
+
+    const reset = () => {
+      uploadedImageURL.value = "";
+      context.emit("reset-finished");
+    };
 
     // アップロードした画像を表示
-    const createImage = (file: File) => {
+    const createImagePreview = (file: File) => {
+      if (file === undefined) {
+        reset();
+        return;
+      }
       const reader = new FileReader();
       reader.onload = (event) => {
         if (event.target && event.target.result) {
-          uploadedImage.value = String(event.target.result);
+          uploadedImageURL.value = String(event.target.result);
         }
       };
-      reader.readAsDataURL(file);
+      reader.onabort = () => {
+        reader.abort();
+        reset();
+      };
+      if (file) {
+        reader.readAsDataURL(file);
+      }
     };
 
     // eslint-disable-next-line
     const onImageUpload = (payload: any) => {
       // アップロード動作をしたとき
-      uploadStatus.value = 1;
-      uploadImage(payload, uploadProgress, uploadStatus, fileLinkURL);
-      createImage(payload.srcElement.files[0]);
+      const uploadedFile: File = payload.srcElement.files[0];
+      createImagePreview(uploadedFile);
+      context.emit("uploaded", uploadedFile);
     };
     return {
-      fileLinkURL,
       onImageUpload,
-      uploadedImage,
-      uploadStatus,
-      uploadProgress,
+      uploadedImageURL,
     };
   },
 });
