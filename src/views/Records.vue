@@ -52,21 +52,9 @@
         追加
       </button>
     </div>
-    <table class="record-table">
-      <thead>
-        <tr>
-          <th colspan="6">リスト</th>
-        </tr>
-      </thead>
-      <tbody>
-        <record-row
-          v-for="record in records"
-          :key="record.id"
-          :data="record"
-          @delete-record="deleteRecord"
-        />
-      </tbody>
-    </table>
+
+    <!-- レコードリスト -->
+    <record-list-vue :records="records" @delete-record="deleteRecord" />
   </div>
 </template>
 
@@ -75,12 +63,11 @@ import { defineComponent, reactive, computed, toRefs } from "vue";
 import { Record, recordTypeStr } from "@/modules/record";
 import getRecordsList from "@/composables/get-records-list";
 import addRecordToFirestore from "@/composables/add-record";
-import deleteRecordFromFirestore from "@/composables/delete-record";
 import { uploadImageToFirebase } from "@/composables/image-upload";
-import RecordRow from "@/components/RecordRow.vue";
+import ArbitraryTimeInputVue from "@/components/ArbitraryTimeInput.vue";
 import DateSelectorVue from "@/components/DateSelector.vue";
 import FileUploaderVue from "@/components/FileUploader.vue";
-import ArbitraryTimeInputVue from "@/components/ArbitraryTimeInput.vue";
+import RecordListVue from "@/components/RecordList.vue";
 
 interface State {
   arbitraryTimeActive: boolean; // 任意時刻入力が有効かどうか
@@ -94,10 +81,10 @@ interface State {
 
 export default defineComponent({
   components: {
-    RecordRow,
-    FileUploaderVue,
-    DateSelectorVue,
     ArbitraryTimeInputVue,
+    DateSelectorVue,
+    FileUploaderVue,
+    RecordListVue,
   },
   setup() {
     const {
@@ -120,11 +107,9 @@ export default defineComponent({
       })
     );
 
-    const addButtonDisabled = computed(() => {
-      return (
-        type.value === "-1" || (type.value === "0" && comment.value === "")
-      );
-    });
+    const addButtonDisabled = computed(
+      () => type.value === "-1" || (type.value === "0" && comment.value === "")
+    );
 
     const toggleArbitTimeActive = () => {
       arbitraryTimeActive.value = !arbitraryTimeActive.value;
@@ -141,6 +126,9 @@ export default defineComponent({
     };
     const imageDeleted = () => {
       imageObj.value = null;
+    };
+    const onUploaderReset = () => {
+      uploadStatus.value = 0;
     };
 
     const inputTimeChanged = (time: Date) => {
@@ -172,18 +160,8 @@ export default defineComponent({
       }
     };
 
-    const onUploaderReset = () => {
-      uploadStatus.value = 0;
-    };
-
-    const deleteRecord = async (id: string) => {
-      if (confirm("削除しますか？")) {
-        await deleteRecordFromFirestore(id);
-        const index = records.value.findIndex((rec) => rec.id === id);
-        if (index !== -1) {
-          records.value.splice(index, 1);
-        }
-      }
+    const deleteRecord = async (index: number) => {
+      records.value.splice(index, 1);
     };
 
     return {
@@ -208,15 +186,6 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-.record-table {
-  width: 90%;
-  height: auto;
-  margin: 30px auto;
-  overflow-x: scroll;
-  border-collapse: separate;
-  border-spacing: 0px 30px;
-}
-
 .record-container {
   .input-box {
     display: flex;
