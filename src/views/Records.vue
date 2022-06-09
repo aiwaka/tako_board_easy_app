@@ -30,13 +30,11 @@
           />
         </label>
       </div>
-
       <!-- 任意時刻入力ボックス -->
       <arbitrary-time-input-vue
         @input-time-changed="inputTimeChanged"
         @toggle-active="toggleArbitTimeActive"
       />
-
       <!-- 画像追加コンテナ -->
       <file-uploader-vue
         :uploadWatcher="uploadStatus"
@@ -111,10 +109,6 @@ export default defineComponent({
       () => type.value === "-1" || (type.value === "0" && comment.value === "")
     );
 
-    const toggleArbitTimeActive = () => {
-      arbitraryTimeActive.value = !arbitraryTimeActive.value;
-    };
-
     // 開始終了日付を指定してその期間のレコードリストを取得する.
     const acquireList = async (startDate: string, endDate: string) => {
       records.value = [];
@@ -131,6 +125,9 @@ export default defineComponent({
       uploadStatus.value = 0;
     };
 
+    const toggleArbitTimeActive = () => {
+      arbitraryTimeActive.value = !arbitraryTimeActive.value;
+    };
     const inputTimeChanged = (time: Date) => {
       // 任意入力時刻が変更された場合に現在時刻を設定する.
       recordTime.value = time;
