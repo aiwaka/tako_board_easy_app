@@ -31,41 +31,11 @@
         </label>
       </div>
 
-      <!-- 任意時刻を指定できるボックス. 反映されるか否かはボックスを開いているか否かのみに依存する. -->
-      <div class="arbitrary-time-input">
-        <div v-if="!arbitTimeActive">
-          <div class="arbit-time-input__button" @click="toggleArbitTimeActive">
-            +
-          </div>
-          <span>任意時刻を入力する場合は+ボタンを押して開く</span>
-        </div>
-        <div v-else>
-          <div class="arbit-time-input__button" @click="toggleArbitTimeActive">
-            -
-          </div>
-          <span>
-            この欄を開いたまま「追加」することで任意の時刻を反映できます。<br />
-            時刻は時の次に分をクリック・タップして入力します。
-          </span>
-          <br />
-          <label>日付</label>
-          <datepicker
-            class="date-picker"
-            startingView="day"
-            minimumView="day"
-            inputFormat="yyyy-MM-dd"
-            v-model="pickedDate"
-          />
-          <label>時刻</label>
-          <datepicker
-            class="date-picker"
-            startingView="time"
-            minimumView="time"
-            inputFormat="HH:mm"
-            v-model="pickedTime"
-          />
-        </div>
-      </div>
+      <!-- 任意時刻入力ボックス -->
+      <arbitrary-time-input-vue
+        @input-time-changed="inputTimeChanged"
+        @toggle-active="toggleArbitTimeActive"
+      />
 
       <!-- 画像追加コンテナ -->
       <file-uploader-vue
@@ -111,18 +81,14 @@ import { uploadImageToFirebase } from "@/composables/image-upload";
 import RecordRow from "@/components/RecordRow.vue";
 import DateSelectorVue from "@/components/DateSelector.vue";
 import FileUploaderVue from "@/components/FileUploader.vue";
-import { toDateString, toTimeString } from "@/composables/utils";
-import Datepicker from "vue3-datepicker";
+import ArbitraryTimeInputVue from "@/components/ArbitraryTimeInput.vue";
 
 interface State {
-  arbitTimeActive: boolean; // 任意時刻入力が有効かどうか
+  arbitraryTimeActive: boolean; // 任意時刻入力が有効かどうか
   comment: string;
   imageObj: File | null;
-  inputDate: string; // 任意時刻入力のための日付文字列
-  inputTime: string; // 上と同様の時刻文字列
-  pickedDate: Date;
-  pickedTime: Date;
   records: Record[];
+  recordTime: Date;
   type: string;
   uploadStatus: number;
 }
@@ -131,31 +97,25 @@ export default defineComponent({
   components: {
     RecordRow,
     FileUploaderVue,
-    datepicker: Datepicker,
     DateSelectorVue,
+    ArbitraryTimeInputVue,
   },
   setup() {
     const {
-      arbitTimeActive,
+      arbitraryTimeActive,
       comment,
       imageObj,
-      inputDate,
-      inputTime,
-      pickedDate,
-      pickedTime,
       records,
+      recordTime,
       type,
       uploadStatus,
     } = toRefs(
       reactive<State>({
-        arbitTimeActive: false,
+        arbitraryTimeActive: false,
         comment: "",
         imageObj: null,
-        inputDate: toDateString(new Date()),
-        inputTime: toTimeString(new Date()),
-        pickedDate: new Date(),
-        pickedTime: new Date(),
         records: [],
+        recordTime: new Date(),
         type: "-1",
         uploadStatus: 0,
       })
@@ -168,7 +128,7 @@ export default defineComponent({
     });
 
     const toggleArbitTimeActive = () => {
-      arbitTimeActive.value = !arbitTimeActive.value;
+      arbitraryTimeActive.value = !arbitraryTimeActive.value;
     };
 
     // 開始終了日付を指定してその期間のレコードリストを取得する.
@@ -177,24 +137,16 @@ export default defineComponent({
       await getRecordsList(records, new Date(startDate), new Date(endDate))();
     };
 
-    const getArbitTimeAsDate = () => {
-      // 外部パッケージを用いて取得した日時を一つのDateオブジェクトにして返す.
-      const date = pickedDate.value;
-      const time = pickedTime.value;
-      return new Date(
-        date.getFullYear(),
-        date.getMonth(),
-        date.getDate(),
-        time.getHours(),
-        time.getMinutes()
-      );
-    };
-
     const imageUploaded = (file: File) => {
       imageObj.value = file;
     };
     const imageDeleted = () => {
       imageObj.value = null;
+    };
+
+    const inputTimeChanged = (time: Date) => {
+      // 任意入力時刻が変更された場合に現在時刻を設定する.
+      recordTime.value = time;
     };
 
     const addRecord = async () => {
@@ -207,11 +159,13 @@ export default defineComponent({
       const addedRecord = await addRecordToFirestore(
         +type.value, // +演算子で数値的な文字列を数値に変換する.
         comment.value,
-        arbitTimeActive.value ? getArbitTimeAsDate() : null,
+        arbitraryTimeActive.value ? recordTime.value : null,
         imageName
       );
       if (addedRecord) {
+        // 送信がなされたら今送ったものをリストに追加し, 各フォームをリセットする.
         records.value.splice(0, 0, addedRecord);
+        // 任意時刻入力ボックスはあえて閉じない. 連続して入力できるようにする.
         type.value = "-1";
         comment.value = "";
         imageObj.value = null;
@@ -237,16 +191,13 @@ export default defineComponent({
       acquireList,
       addButtonDisabled,
       addRecord,
-      arbitTimeActive,
+      arbitraryTimeActive,
       comment,
       deleteRecord,
       imageUploaded,
       imageDeleted,
-      inputDate,
-      inputTime,
+      inputTimeChanged,
       onUploaderReset,
-      pickedDate,
-      pickedTime,
       records,
       recordTypeStr,
       toggleArbitTimeActive,
@@ -258,24 +209,6 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-.arbitrary-time-input {
-  border: 1px dashed #777777;
-  padding: 1rem 0.6rem;
-  .arbit-time-input__button {
-    display: inline-block;
-    width: 1rem;
-    height: 1rem;
-    line-height: 1rem;
-    border: 1px solid #000000;
-    cursor: pointer;
-  }
-  span {
-    margin: 0 0.5rem;
-  }
-  .date-picker input {
-    width: 7rem;
-  }
-}
 .record-table {
   width: 90%;
   height: auto;
