@@ -10,8 +10,3 @@ export const setDescription = (pathDesc: string): void => {
     .querySelector("meta[name='description']")
     ?.setAttribute("content", description);
 };
-
-export default {
-  setTitle,
-  setDescription,
-};

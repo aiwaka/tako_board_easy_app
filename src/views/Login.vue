@@ -29,7 +29,7 @@ import { defineComponent, reactive, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { auth } from "@/settings/firebase";
-import getUserName from "@/composables/get-username";
+import { getUserName } from "@/composables/get-username";
 
 interface State {
   errorMessage: string;
@@ -60,12 +60,8 @@ export default defineComponent({
     });
 
     const login = () => {
-      // eslint-disable-next-line no-console
-      // console.log("try to login");
       signInWithEmailAndPassword(auth, state.userEmail, state.password)
         .then(() => {
-          // .then((userCredential) => {
-          // const user = userCredential.user;
           if (route.query.redirect) {
             const redirect = route.query.redirect;
             if (typeof redirect === "string") {

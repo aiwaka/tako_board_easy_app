@@ -45,6 +45,8 @@ interface State {
   showWholeComment: boolean;
 }
 
+const omitThreshold = 8; // コメント文字列を省略する文字数の閾値
+
 export default defineComponent({
   components: { ModalWindowVue },
   props: {
@@ -68,12 +70,11 @@ export default defineComponent({
         deleteDisabled.value = uid !== props.data.userId;
       }
     });
-    const omitThreshold = 8; // コメント文字列を省略する文字数の閾値
     const commentIsLong = computed(
       () => props.data.comment.length > omitThreshold
     );
     const shortComment = computed(
-      () => props.data.comment.substr(0, omitThreshold) + "..."
+      () => props.data.comment.substring(0, omitThreshold) + "..."
     );
     const toggleShowComment = () => {
       showWholeComment.value = !showWholeComment.value;

@@ -1,7 +1,7 @@
 import { doc, getDoc } from "@firebase/firestore";
 import { db, getCurrentUser } from "@/settings/firebase";
 
-export default async (): Promise<string | null> => {
+export const getUserName = async (): Promise<string | null> => {
   const user = await getCurrentUser();
   const uid = user?.uid;
   if (!uid) {
