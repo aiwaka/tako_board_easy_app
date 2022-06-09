@@ -9,23 +9,7 @@ import {
 import { Ref } from "vue";
 import { db, getCurrentUser } from "@/settings/firebase";
 import { Record } from "@/modules/record";
-
-// const recordConverter = {
-//   toFirestore: (record: Record) => {
-//     return {
-//       type: record.type,
-//       date: record.date,
-//       comment: record.comment,
-//     };
-//   },
-//   fromFirestore: (
-//     snapshot: QueryDocumentSnapshot,
-//     options: SnapshotOptions
-//   ): Record => {
-//     const data = snapshot.data(options);
-//     return new Record(data.type, data.date, data.comment);
-//   },
-// };
+import { recordConverter } from "./record-firestore-converter";
 
 export const getRecordsList = (
   records: Ref<Record[]>,
@@ -42,24 +26,14 @@ export const getRecordsList = (
     if (!uid) return;
     // 降順の場合startとendが逆になる.
     const recordsQuery = query(
-      collectionGroup(db, "records"),
+      collectionGroup(db, "records").withConverter(recordConverter),
       orderBy("date", "desc"),
       endAt(targetDayStart),
       startAt(targetDayEnd)
     );
     const querySnapshot = await getDocs(recordsQuery);
     querySnapshot.forEach((doc) => {
-      const docData = doc.data();
-      const newRec = new Record(
-        doc.id,
-        docData.userId,
-        docData.name,
-        docData.type,
-        docData.date,
-        docData.comment,
-        docData.imageName === undefined ? null : docData.imageName
-      );
-      records.value.push(newRec);
+      records.value.push(doc.data());
     });
   };
   return getRecordsList;
