@@ -24,7 +24,7 @@ interface State {
 export default defineComponent({
   props: {
     fetchCallback: {
-      type: Object as PropType<{
+      type: Function as PropType<{
         (startDate: string, endDate: string): Promise<void>;
       }>,
       required: true,
