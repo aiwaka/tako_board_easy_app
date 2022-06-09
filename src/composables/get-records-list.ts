@@ -27,7 +27,7 @@ import { Record } from "@/modules/record";
 //   },
 // };
 
-export default (
+export const getRecordsList = (
   records: Ref<Record[]>,
   startDay: Date,
   endDay: Date

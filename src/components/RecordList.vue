@@ -18,9 +18,9 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from "vue";
-import deleteRecordFromFirestore from "@/composables/delete-record";
-import RecordRowVue from "@/components/RecordRow.vue";
+import { deleteRecordFromFirestore } from "@/composables/delete-record";
 import { Record } from "@/modules/record";
+import RecordRowVue from "@/components/RecordRow.vue";
 
 export default defineComponent({
   components: { RecordRowVue },

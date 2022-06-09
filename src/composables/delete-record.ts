@@ -2,7 +2,9 @@ import { doc, getDoc, deleteDoc } from "firebase/firestore";
 import { db, getCurrentUser } from "@/settings/firebase";
 import { deleteImageFromFirebase } from "./delete-image";
 
-export default async (recordId: string): Promise<void | null> => {
+export const deleteRecordFromFirestore = async (
+  recordId: string
+): Promise<void | null> => {
   const user = await getCurrentUser();
   const uid = user?.uid;
   if (!uid) return null;

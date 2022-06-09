@@ -2,7 +2,7 @@ import { collection, doc, getDoc, setDoc, Timestamp } from "firebase/firestore";
 import { db, getCurrentUser } from "@/settings/firebase";
 import { Record } from "@/modules/record";
 
-export default async (
+export const addRecordToFirestore = async (
   type: number,
   comment: string,
   inputTime: Date | null = null,

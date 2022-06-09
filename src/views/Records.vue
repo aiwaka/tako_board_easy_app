@@ -61,8 +61,8 @@
 <script lang="ts">
 import { defineComponent, reactive, computed, toRefs } from "vue";
 import { Record, recordTypeStr } from "@/modules/record";
-import getRecordsList from "@/composables/get-records-list";
-import addRecordToFirestore from "@/composables/add-record";
+import { getRecordsList } from "@/composables/get-records-list";
+import { addRecordToFirestore } from "@/composables/add-record";
 import { uploadImageToFirebase } from "@/composables/image-upload";
 import ArbitraryTimeInputVue from "@/components/ArbitraryTimeInput.vue";
 import DateSelectorVue from "@/components/DateSelector.vue";
