@@ -39,7 +39,6 @@
 
       <!-- 画像追加コンテナ -->
       <file-uploader-vue
-        ref="uploaderRef"
         :uploadWatcher="uploadStatus"
         @uploaded="imageUploaded"
         @reset-finished="onUploaderReset"
