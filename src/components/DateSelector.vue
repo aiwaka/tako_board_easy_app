@@ -55,3 +55,13 @@ export default defineComponent({
   },
 });
 </script>
+
+<style lang="scss" scoped>
+.date-selector {
+  display: flex;
+  justify-content: center;
+  > input {
+    margin: auto 15px;
+  }
+}
+</style>

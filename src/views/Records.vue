@@ -284,13 +284,7 @@ export default defineComponent({
   border-collapse: separate;
   border-spacing: 0px 30px;
 }
-.record-container__day-selector {
-  display: flex;
-  justify-content: center;
-  > input {
-    margin: auto 15px;
-  }
-}
+
 .record-container {
   .input-box {
     display: flex;
