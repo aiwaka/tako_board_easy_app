@@ -28,12 +28,15 @@ export class Record {
     const date = dateObj.getDate();
     const hour = dateObj.getHours();
     const minute = dateObj.getMinutes();
-    const second = dateObj.getSeconds();
+    // const second = dateObj.getSeconds();
     const day = dayStr[dateObj.getDay()];
-    return `${year}年${month}月${date}日（${day}） ${hour}時${minute}分${second}秒`;
+    const hourStr = hour.toString().padStart(2, "0");
+    const minuteStr = minute.toString().padStart(2, "0");
+    // return `${year}年${month}月${date}日（${day}） ${hour}時${minute}分${second}秒`;
+    return `${year}/${month}/${date}（${day}） ${hourStr}:${minuteStr}`;
   }
   public getTime(): string {
-    const dateObj: Date = this.date.toDate();
+    const dateObj = this.date.toDate();
     const hour = dateObj.getHours();
     const minute = dateObj.getMinutes();
     // const second = dateObj.getSeconds();
