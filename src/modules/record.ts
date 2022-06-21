@@ -33,7 +33,7 @@ export class Record {
     const hourStr = hour.toString().padStart(2, "0");
     const minuteStr = minute.toString().padStart(2, "0");
     // return `${year}年${month}月${date}日（${day}） ${hour}時${minute}分${second}秒`;
-    return `${year}/${month}/${date}（${day}） ${hourStr}:${minuteStr}`;
+    return `${month}/${date} ${hourStr}:${minuteStr}`;
   }
   public getTime(): string {
     const dateObj = this.date.toDate();
