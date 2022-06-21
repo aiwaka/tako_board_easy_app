@@ -1,8 +1,9 @@
 <template>
   <tr class="record">
     <td class="who">{{ data.who }}</td>
-    <td class="day">{{ data.date.toDate().getDate() }}日</td>
-    <td class="date">{{ data.getTime() }}</td>
+    <!-- <td class="day">{{ data.date.toDate().getDate() }}日</td> -->
+    <!-- <td class="date">{{ data.getTime() }}</td> -->
+    <td class="date">{{ data.getDate() }}</td>
     <td class="type">{{ data.getType() }}</td>
     <td
       class="comment"
