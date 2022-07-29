@@ -64,8 +64,8 @@ import { uploadImageToFirebase } from "@/composables/image-upload";
 import ArbitraryTimeInputVue from "@/components/ArbitraryTimeInput.vue";
 import FileUploaderVue from "@/components/FileUploader.vue";
 import RecordListVue from "@/components/RecordList.vue";
-import { endAt, orderBy, startAt } from "@firebase/firestore";
 import QueryMaker from "@/components/QueryMaker.vue";
+import { QueryConstraint } from "@firebase/firestore";
 
 interface State {
   arbitraryTimeActive: boolean; // 任意時刻入力が有効かどうか
@@ -109,16 +109,9 @@ export default defineComponent({
       () => type.value === "-1" || (type.value === "0" && comment.value === "")
     );
 
-    // 開始終了日付を指定してその期間のレコードリストを取得する.
-    const acquireList = async (startDate: string, endDate: string) => {
+    // レコードリストを取得. クエリメーカーで作成されたクエリを渡してもらう.
+    const acquireList = async (queries: QueryConstraint[]) => {
       records.value = [];
-      // 降順の場合startとendが逆になる.
-      const queries = [
-        orderBy("date", "desc"),
-        endAt(new Date(startDate)),
-        startAt(new Date(endDate)),
-      ];
-      // await getRecordsList(records, new Date(startDate), new Date(endDate))();
       await getRecordsList(records, queries)();
     };
 

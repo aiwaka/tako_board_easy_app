@@ -2,9 +2,6 @@ import {
   collectionGroup,
   getDocs,
   query,
-  orderBy,
-  startAt,
-  endAt,
   QueryConstraint,
 } from "@firebase/firestore";
 import { Ref } from "vue";

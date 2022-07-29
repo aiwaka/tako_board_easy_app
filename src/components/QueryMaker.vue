@@ -11,6 +11,7 @@
 
 <script lang="ts">
 import { defineComponent, toRefs, reactive, onMounted, PropType } from "vue";
+import { endAt, orderBy, startAt, QueryConstraint } from "@firebase/firestore";
 import { toDateString } from "@/composables/utils";
 
 import DateSelectorVue from "@/components/DateSelector.vue";
@@ -30,7 +31,7 @@ export default defineComponent({
   props: {
     fetchCallback: {
       type: Function as PropType<{
-        (startDate: string, endDate: string): Promise<void>;
+        (queries: QueryConstraint[]): Promise<void>;
       }>,
       required: true,
     },
@@ -43,11 +44,17 @@ export default defineComponent({
         startDate: toDateString(prevWeekDay),
       })
     );
-    onMounted(() => props.fetchCallback(startDate.value, endDate.value));
+    onMounted(() => fetch());
 
     const fetch = async () => {
-      // 開始終了期間を受け取ってレコードリストを取得する関数をpropsで取っておいて実行する.
-      await props.fetchCallback(startDate.value, endDate.value);
+      // 取得時期期間, 検索条件等を総合したクエリを作成し, propsで受け取っているコールバックに渡しながら実行
+      // 降順の場合startとendが逆になる.
+      const queries = [
+        orderBy("date", "desc"),
+        endAt(new Date(startDate.value)),
+        startAt(new Date(endDate.value)),
+      ];
+      await props.fetchCallback(queries);
       fetchButtonDisabled.value = true;
     };
 
