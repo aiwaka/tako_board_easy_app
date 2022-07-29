@@ -8,6 +8,7 @@ export const recordTypeStr = [
   "トイレ掃除",
   "簡易トイレ掃除",
   "散歩",
+  "爪切り",
 ];
 
 export class Record {
