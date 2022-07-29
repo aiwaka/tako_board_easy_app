@@ -1,7 +1,6 @@
 <template>
   <div class="record-container">
-    <date-selector-vue :fetch-callback="acquireList" />
-
+    <query-maker :fetch-callback="acquireList" />
     <div class="input-box">
       <div>
         <label>
@@ -63,9 +62,10 @@ import { getRecordsList } from "@/composables/get-records-list";
 import { addRecordToFirestore } from "@/composables/add-record";
 import { uploadImageToFirebase } from "@/composables/image-upload";
 import ArbitraryTimeInputVue from "@/components/ArbitraryTimeInput.vue";
-import DateSelectorVue from "@/components/DateSelector.vue";
 import FileUploaderVue from "@/components/FileUploader.vue";
 import RecordListVue from "@/components/RecordList.vue";
+import { endAt, orderBy, startAt } from "@firebase/firestore";
+import QueryMaker from "@/components/QueryMaker.vue";
 
 interface State {
   arbitraryTimeActive: boolean; // 任意時刻入力が有効かどうか
@@ -80,9 +80,9 @@ interface State {
 export default defineComponent({
   components: {
     ArbitraryTimeInputVue,
-    DateSelectorVue,
     FileUploaderVue,
     RecordListVue,
+    QueryMaker,
   },
   setup() {
     const {
@@ -112,7 +112,14 @@ export default defineComponent({
     // 開始終了日付を指定してその期間のレコードリストを取得する.
     const acquireList = async (startDate: string, endDate: string) => {
       records.value = [];
-      await getRecordsList(records, new Date(startDate), new Date(endDate))();
+      // 降順の場合startとendが逆になる.
+      const queries = [
+        orderBy("date", "desc"),
+        endAt(new Date(startDate)),
+        startAt(new Date(endDate)),
+      ];
+      // await getRecordsList(records, new Date(startDate), new Date(endDate))();
+      await getRecordsList(records, queries)();
     };
 
     const imageUploaded = (file: File) => {
