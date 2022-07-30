@@ -5,15 +5,38 @@
       v-on:end-date-changed="endDateChanged"
       v-on:start-date-changed="startDateChanged"
     />
+    タイプ指定：
+    <select
+      name="query-record-type"
+      v-model="recordType"
+      v-on:change="recordTypeChanged"
+    >
+      <option value="-1">---</option>
+      <option
+        v-for="(type, index) in recordTypeStr"
+        :key="type"
+        :value="'' + index"
+      >
+        <!-- valueをバインドする際は-1に合わせるためstringに変換している. -->
+        {{ type }}
+      </option>
+    </select>
     <button @click="fetch" :disabled="fetchButtonDisabled">取得</button>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, toRefs, reactive, onMounted, PropType } from "vue";
-import { endAt, orderBy, startAt, QueryConstraint } from "@firebase/firestore";
+import {
+  endAt,
+  orderBy,
+  startAt,
+  QueryConstraint,
+  where,
+} from "@firebase/firestore";
 import { toDateString } from "@/composables/utils";
 
+import { recordTypeStr } from "@/modules/record";
 import DateSelectorVue from "@/components/DateSelector.vue";
 
 const today = new Date();
@@ -23,6 +46,7 @@ const prevWeekDay = new Date(tempToday.setDate(tempToday.getDate() - 7));
 interface State {
   endDate: string;
   fetchButtonDisabled: boolean;
+  recordType: string;
   startDate: string;
 }
 
@@ -37,10 +61,11 @@ export default defineComponent({
     },
   },
   setup(props) {
-    const { endDate, fetchButtonDisabled, startDate } = toRefs(
+    const { endDate, fetchButtonDisabled, startDate, recordType } = toRefs(
       reactive<State>({
         endDate: toDateString(today),
         fetchButtonDisabled: true,
+        recordType: "-1",
         startDate: toDateString(prevWeekDay),
       })
     );
@@ -54,17 +79,23 @@ export default defineComponent({
         endAt(new Date(startDate.value)),
         startAt(new Date(endDate.value)),
       ];
-      await props.fetchCallback(queries);
+      if (recordType.value !== "-1") {
+        queries.push(where("type", "==", parseInt(recordType.value)));
+      }
       fetchButtonDisabled.value = true;
+      await props.fetchCallback(queries);
     };
 
     // 表示日が初期状態から変更された場合, レコード再取得ボタンを有効化する.
     const endDateChanged = (newDate: string) => {
       endDate.value = newDate;
-      fetchButtonDisabled.value = false;
+      recordTypeChanged();
     };
     const startDateChanged = (newDate: string) => {
       startDate.value = newDate;
+      recordTypeChanged();
+    };
+    const recordTypeChanged = () => {
       fetchButtonDisabled.value = false;
     };
 
@@ -73,6 +104,9 @@ export default defineComponent({
       endDateChanged,
       fetch,
       fetchButtonDisabled,
+      recordType,
+      recordTypeChanged,
+      recordTypeStr,
       startDate,
       startDateChanged,
     };
