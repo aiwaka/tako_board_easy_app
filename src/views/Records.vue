@@ -5,15 +5,15 @@
       <div>
         <label>
           タイプ
-          <select name="type" v-model="type">
+          <select name="record-type" v-model="recordType">
             <option value="-1">---</option>
             <option
-              v-for="(type, index) in recordTypeStr"
-              :key="type"
+              v-for="(recordType, index) in recordTypeStr"
+              :key="recordType"
               :value="'' + index"
             >
               <!-- valueをバインドする際は-1に合わせるためstringに変換している. -->
-              {{ type }}
+              {{ recordType }}
             </option>
           </select>
         </label>
@@ -22,7 +22,7 @@
         <label>
           コメント
           <input
-            type="text"
+            recordType="text"
             name="comment"
             placeholder="comment"
             v-model="comment"
@@ -73,7 +73,7 @@ interface State {
   imageObj: File | null;
   records: Record[];
   recordTime: Date;
-  type: string;
+  recordType: string;
   uploadStatus: number;
 }
 
@@ -91,7 +91,7 @@ export default defineComponent({
       imageObj,
       records,
       recordTime,
-      type,
+      recordType,
       uploadStatus,
     } = toRefs(
       reactive<State>({
@@ -100,13 +100,15 @@ export default defineComponent({
         imageObj: null,
         records: [],
         recordTime: new Date(),
-        type: "-1",
+        recordType: "-1",
         uploadStatus: 0,
       })
     );
 
     const addButtonDisabled = computed(
-      () => type.value === "-1" || (type.value === "0" && comment.value === "")
+      () =>
+        recordType.value === "-1" ||
+        (recordType.value === "0" && comment.value === "")
     );
 
     // レコードリストを取得. クエリメーカーで作成されたクエリを渡してもらう.
@@ -141,7 +143,7 @@ export default defineComponent({
         imageName = uploadImageToFirebase(imageObj.value);
       }
       const addedRecord = await addRecordToFirestore(
-        +type.value, // +演算子で数値的な文字列を数値に変換する.
+        +recordType.value, // +演算子で数値的な文字列を数値に変換する.
         comment.value,
         arbitraryTimeActive.value ? recordTime.value : null,
         imageName
@@ -150,7 +152,7 @@ export default defineComponent({
         // 送信がなされたら今送ったものをリストに追加し, 各フォームをリセットする.
         records.value.splice(0, 0, addedRecord);
         // 任意時刻入力ボックスはあえて閉じない. 連続して入力できるようにする.
-        type.value = "-1";
+        recordType.value = "-1";
         comment.value = "";
         imageObj.value = null;
         uploadStatus.value = 2;
@@ -175,7 +177,7 @@ export default defineComponent({
       records,
       recordTypeStr,
       toggleArbitTimeActive,
-      type,
+      recordType,
       uploadStatus,
     };
   },
