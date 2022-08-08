@@ -1,13 +1,13 @@
 <template>
   <div class="records-view">
-    <div class="input-search-box-container">
-      <h4>入力・検索</h4>
+    <h4>入力・検索</h4>
+    <div class="input-and-search-box-container">
       <record-input-box @record-added="recordAdded" />
       <query-maker :fetch-callback="acquireList" />
     </div>
+    <h4>リスト</h4>
     <div class="record-list-container">
       <!-- レコードリスト -->
-      <h4>リスト</h4>
       <records-list-vue :records="records" @delete-record="deleteRecord" />
     </div>
   </div>
@@ -67,6 +67,10 @@ export default defineComponent({
 <style lang="scss" scoped>
 .records-view {
   margin: 0px max(2.6rem, 10%);
+
+  .input-and-search-box-container {
+    margin: auto 5rem;
+  }
 
   .record-list-container {
     margin-top: 3rem;
