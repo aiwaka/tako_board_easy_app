@@ -161,6 +161,8 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+@use "sass:math";
+
 .record-input-container {
   display: flex;
   flex-direction: column;
@@ -211,7 +213,7 @@ $active-arrow-color: #42b983;
     position: absolute;
     margin: auto;
     top: 3px;
-    left: 16px - (14px / 2);
+    left: 16px - math.div(14px, 2);
     width: 14px;
     height: 13px;
     background-color: $inactive-arrow-color;
