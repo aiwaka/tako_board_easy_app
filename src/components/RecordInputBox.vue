@@ -1,32 +1,28 @@
 <template>
   <div class="record-input-box">
-    <div>
-      <label>
-        タイプ
-        <select name="record-type" v-model="recordType">
-          <option value="-1">---</option>
-          <option
-            v-for="(recordType, index) in recordTypeStr"
-            :key="recordType"
-            :value="'' + index"
-          >
-            <!-- valueをバインドする際は-1に合わせるためstringに変換している. -->
-            {{ recordType }}
-          </option>
-        </select>
-      </label>
-    </div>
-    <div>
-      <label>
-        コメント
-        <input
-          recordType="text"
-          name="comment"
-          placeholder="comment"
-          v-model="comment"
-        />
-      </label>
-    </div>
+    <fieldset class="record-input">
+      <label for="record-input--type">タイプ</label>
+      <select id="record-input--type" name="record-type" v-model="recordType">
+        <option value="-1">---</option>
+        <option
+          v-for="(recordType, index) in recordTypeStr"
+          :key="recordType"
+          :value="'' + index"
+        >
+          <!-- valueをバインドする際は-1に合わせるためstringに変換している. -->
+          {{ recordType }}
+        </option>
+      </select>
+
+      <label for="record-input--text">コメント</label>
+      <input
+        type="text"
+        id="record-input--text"
+        name="comment"
+        placeholder="comment"
+        v-model="comment"
+      />
+    </fieldset>
     <!-- 任意時刻入力ボックス -->
     <arbitrary-time-input-vue
       @input-time-changed="inputTimeChanged"
@@ -163,9 +159,42 @@ export default defineComponent({
   flex-direction: column;
   align-items: center;
   > div {
-    // width: 50%;
     display: flex;
     justify-content: left;
+  }
+}
+
+fieldset.record-input {
+  $item-height: 1.4rem;
+
+  display: grid;
+  grid-template-rows: repeat(2, $item-height);
+  grid-template-columns: 4rem 1fr;
+  row-gap: 1rem;
+  column-gap: 0.7rem;
+  padding: 0.6rem 1rem;
+
+  input {
+    color: inherit;
+    border: 1px solid #777;
+    transition: ease-in-out 0.2s;
+
+    &:focus {
+      outline-width: 0;
+      border-radius: 5px;
+      background-color: rgba(0, 0, 0, 0.1);
+    }
+  }
+
+  select {
+    border: 1px solid #777;
+    transition: ease-in-out 0.2s;
+
+    &:focus {
+      outline-width: 0;
+      border-radius: 5px;
+      background-color: rgba(0, 0, 0, 0.1);
+    }
   }
 }
 </style>

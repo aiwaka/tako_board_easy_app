@@ -65,11 +65,7 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .records-view {
-  margin: 0px max(2.6rem, 10%);
-
-  .input-and-search-box-container {
-    margin: auto 5rem;
-  }
+  margin: 0px max(2.6rem, 5%);
 
   .record-list-container {
     margin-top: 3rem;
