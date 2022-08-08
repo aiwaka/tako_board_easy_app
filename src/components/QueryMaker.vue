@@ -1,6 +1,7 @@
 <template>
   <!-- Firestore検索クエリを作成し取得ボタンを押したらコールバックに渡す -->
   <div class="query-maker">
+    <h3>検索条件</h3>
     <date-selector-vue
       v-on:end-date-changed="endDateChanged"
       v-on:start-date-changed="startDateChanged"
@@ -115,11 +116,11 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-.date-selector {
-  display: flex;
-  justify-content: center;
-  > input {
-    margin: auto 15px;
+.query-maker {
+  border: 1px solid #777;
+
+  h3 {
+    margin: auto;
   }
 }
 </style>

@@ -186,6 +186,8 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .record-container {
+  margin: 0px max(2.6rem, 10%);
+
   .input-box {
     display: flex;
     flex-direction: column;
