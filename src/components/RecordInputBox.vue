@@ -173,6 +173,7 @@ fieldset.record-input {
   row-gap: 1rem;
   column-gap: 0.7rem;
   padding: 0.6rem 1rem;
+  border: none;
 
   input {
     color: inherit;

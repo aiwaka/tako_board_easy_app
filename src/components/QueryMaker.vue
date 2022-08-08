@@ -31,7 +31,13 @@
             </option>
           </select>
         </div>
-        <button @click="fetch" :disabled="fetchButtonDisabled">取得</button>
+        <button
+          class="search-execute"
+          @click="fetch"
+          :disabled="fetchButtonDisabled"
+        >
+          取得
+        </button>
       </div>
     </template>
   </div>
@@ -137,7 +143,8 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .query-maker {
-  border: 1px dashed #777777;
+  border: 1px solid #777777;
+  margin: 0.7rem auto;
   padding: 1rem 0.6rem;
   &__toggle-button {
     display: inline-block;
@@ -153,6 +160,9 @@ export default defineComponent({
 
   h3 {
     margin: auto;
+  }
+  .search-execute {
+    margin-top: 0.6rem;
   }
 }
 </style>

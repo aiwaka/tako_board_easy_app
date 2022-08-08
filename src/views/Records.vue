@@ -64,9 +64,18 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/css/mixins.scss";
+
 .records-view {
   margin: 0px max(2.6rem, 5%);
 
+  .input-and-search-box-container {
+    margin: auto;
+    width: 50%;
+    @include mediaquery(tiny-size) {
+      width: 90%;
+    }
+  }
   .record-list-container {
     margin-top: 3rem;
   }

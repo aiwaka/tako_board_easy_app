@@ -89,8 +89,10 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .arbitrary-time-input {
-  border: 1px dashed #777;
+  border: 1px solid #777;
+  margin: 0.6rem auto;
   padding: 1rem 0.6rem;
+
   &__button {
     display: inline-block;
     width: 1rem;
