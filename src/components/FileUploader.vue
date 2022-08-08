@@ -1,7 +1,7 @@
 <template>
   <div class="image-uploader-container">
     <div>
-      <label for="image-uploader">添付画像を1枚選択</label>
+      <label for="image-uploader">添付画像</label>
       <input
         name="image-uploader"
         class="image-uploader"
@@ -103,6 +103,7 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .image-uploader-container {
+  margin: 0.2rem auto;
   display: flex;
   flex-direction: column;
   align-items: center;

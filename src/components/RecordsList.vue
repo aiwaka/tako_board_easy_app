@@ -1,10 +1,10 @@
 <template>
-  <table class="record-table">
-    <thead>
+  <table v-if="records.length !== 0" class="record-table">
+    <!-- <thead>
       <tr>
         <th colspan="6">リスト</th>
       </tr>
-    </thead>
+    </thead> -->
     <tbody>
       <record-row-vue
         v-for="record in records"
@@ -14,6 +14,9 @@
       />
     </tbody>
   </table>
+  <div v-else>
+    <span>レコードがありません</span>
+  </div>
 </template>
 
 <script lang="ts">
@@ -50,7 +53,7 @@ export default defineComponent({
 .record-table {
   width: 90%;
   height: auto;
-  margin: 30px auto;
+  margin: 0.4rem auto;
   overflow-x: scroll;
   border-collapse: separate;
   border-spacing: 0px 30px;

@@ -1,0 +1,13 @@
+$breakpoint: (
+  "tiny-size": "screen and (max-width: 639px)",
+  "small-size": "screen and (max-width: 1023px)",
+  "normal-size": "screen and (min-width: 1023px)",
+) !default;
+
+@mixin mediaquery($size: normal-size) {
+  @media #{ map-get( $breakpoint, #{$size} ) } {
+    @content;
+  }
+}
+
+$header-height: 8rem !default;
