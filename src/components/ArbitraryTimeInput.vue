@@ -3,15 +3,10 @@
   <div class="arbitrary-time-input">
     <div v-if="!active">
       <div class="arbitrary-time-input__button" @click="toggleactive">+</div>
-      <span>任意時刻を入力する場合は+ボタンを押して開く</span>
+      <span>任意の時刻を入力</span>
     </div>
     <div v-else>
       <div class="arbitrary-time-input__button" @click="toggleactive">-</div>
-      <span>
-        この欄を開いたまま「追加」することで任意の時刻を反映できます。<br />
-        時刻は時の次に分をクリック・タップして入力します。
-      </span>
-      <br />
       <label>日付</label>
       <datepicker
         class="date-picker"

@@ -5,9 +5,8 @@
       <record-input-box @record-added="recordAdded" />
       <query-maker :fetch-callback="acquireList" />
     </div>
-    <h4>リスト</h4>
+    <h4>レコードリスト</h4>
     <div class="record-list-container">
-      <!-- レコードリスト -->
       <records-list-vue :records="records" @delete-record="deleteRecord" />
     </div>
   </div>
