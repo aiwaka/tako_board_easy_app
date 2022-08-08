@@ -1,47 +1,54 @@
 <template>
-  <div class="record-input-box">
-    <fieldset class="record-input">
-      <label for="record-input--type">タイプ</label>
-      <select id="record-input--type" name="record-type" v-model="recordType">
-        <option value="-1">---</option>
-        <option
-          v-for="(recordType, index) in recordTypeStr"
-          :key="recordType"
-          :value="'' + index"
-        >
-          <!-- valueをバインドする際は-1に合わせるためstringに変換している. -->
-          {{ recordType }}
-        </option>
-      </select>
+  <div class="record-input-container">
+    <div class="record-input-form">
+      <fieldset class="record-input">
+        <label for="record-input--type">タイプ</label>
+        <select id="record-input--type" name="record-type" v-model="recordType">
+          <option value="-1">---</option>
+          <option
+            v-for="(recordType, index) in recordTypeStr"
+            :key="recordType"
+            :value="'' + index"
+          >
+            <!-- valueをバインドする際は-1に合わせるためstringに変換している. -->
+            {{ recordType }}
+          </option>
+        </select>
 
-      <label for="record-input--text">コメント</label>
-      <input
-        type="text"
-        id="record-input--text"
-        name="comment"
-        placeholder="comment"
-        v-model="comment"
+        <label for="record-input--text">コメント</label>
+        <input
+          type="text"
+          id="record-input--text"
+          name="comment"
+          placeholder="comment"
+          v-model="comment"
+        />
+      </fieldset>
+      <!-- 任意時刻入力ボックス -->
+      <arbitrary-time-input-vue
+        @input-time-changed="inputTimeChanged"
+        @toggle-active="toggleArbitTimeActive"
       />
-    </fieldset>
-    <!-- 任意時刻入力ボックス -->
-    <arbitrary-time-input-vue
-      @input-time-changed="inputTimeChanged"
-      @toggle-active="toggleArbitTimeActive"
-    />
-    <!-- 画像追加コンテナ -->
-    <file-uploader-vue
-      :uploadWatcher="uploadStatus"
-      @uploaded="imageUploaded"
-      @reset-finished="onUploaderReset"
-    />
-
-    <button
-      class="add-button"
-      @click.prevent="addRecord"
-      :disabled="addButtonDisabled"
-    >
-      追加
-    </button>
+      <!-- 画像追加コンテナ -->
+      <file-uploader-vue
+        :uploadWatcher="uploadStatus"
+        @uploaded="imageUploaded"
+        @reset-finished="onUploaderReset"
+      />
+    </div>
+    <div
+      class="arrow-icon"
+      :class="{ 'active-arrow': !addButtonDisabled }"
+    ></div>
+    <div class="add-button-container">
+      <button
+        class="add-button"
+        @click.prevent="addRecord"
+        :disabled="addButtonDisabled"
+      >
+        追加
+      </button>
+    </div>
   </div>
 </template>
 
@@ -154,7 +161,15 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-.record-input-box {
+.record-input-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.record-input-form {
+  padding: 0.5rem 0.2rem;
+  width: 100%;
+  border: 1px solid #777;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -162,6 +177,52 @@ export default defineComponent({
     display: flex;
     justify-content: left;
   }
+}
+
+$inactive-arrow-color: gray;
+$active-arrow-color: #42b983;
+.arrow-icon {
+  margin: 0.2rem;
+  position: relative;
+  padding-top: 32px;
+  width: 32px;
+
+  &::before {
+    box-sizing: border-box;
+    content: "";
+    position: absolute;
+    margin: auto;
+    top: 16px;
+    left: 0px;
+    width: 16px;
+    height: 16px;
+    border: {
+      top: 16px solid $inactive-arrow-color;
+      bottom: 0px;
+      left: 16px solid transparent;
+      right: 16px solid transparent;
+    }
+  }
+  &.active-arrow::before {
+    border-top: 16px solid $active-arrow-color;
+  }
+  &::after {
+    content: "";
+    position: absolute;
+    margin: auto;
+    top: 3px;
+    left: 16px - (14px / 2);
+    width: 14px;
+    height: 13px;
+    background-color: $inactive-arrow-color;
+  }
+  &.active-arrow::after {
+    background-color: $active-arrow-color;
+  }
+}
+
+.add-button-container {
+  margin: 0.5rem auto;
 }
 
 fieldset.record-input {

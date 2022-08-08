@@ -1,10 +1,9 @@
 <template>
   <div class="records-view">
-    <h4>入力・検索</h4>
-    <div class="input-and-search-box-container">
-      <record-input-box @record-added="recordAdded" />
-      <query-maker :fetch-callback="acquireList" />
-    </div>
+    <h4>入力</h4>
+    <record-input-box @record-added="recordAdded" />
+    <h4>検索</h4>
+    <query-maker :fetch-callback="acquireList" />
     <h4>レコードリスト</h4>
     <div class="record-list-container">
       <records-list-vue :records="records" @delete-record="deleteRecord" />
@@ -64,21 +63,8 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import "@/assets/css/mixins.scss";
-
 .records-view {
   margin: 0px max(2.6rem, 5%);
-
-  .input-and-search-box-container {
-    margin: auto;
-    width: 50%;
-    @include mediaquery(tiny-size) {
-      width: 90%;
-    }
-  }
-  .record-list-container {
-    margin-top: 3rem;
-  }
 
   .input-box {
     display: flex;
