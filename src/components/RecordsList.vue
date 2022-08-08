@@ -53,7 +53,7 @@ export default defineComponent({
 .record-table {
   width: 90%;
   height: auto;
-  margin: 30px auto;
+  margin: 0.4rem auto;
   overflow-x: scroll;
   border-collapse: separate;
   border-spacing: 0px 30px;

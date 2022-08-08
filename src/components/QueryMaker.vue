@@ -144,7 +144,7 @@ export default defineComponent({
 <style lang="scss" scoped>
 .query-maker {
   border: 1px solid #777777;
-  margin: 0.7rem auto;
+  margin: 0.2rem auto 2.8rem;
   padding: 1rem 0.6rem;
   &__toggle-button {
     display: inline-block;
