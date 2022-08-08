@@ -2,11 +2,11 @@
   <!-- 任意時刻を指定できるボックス. 反映されるか否かはボックスを開いているか否かのみに依存する. -->
   <div class="arbitrary-time-input">
     <div v-if="!active">
-      <div class="arbitrary-time-input__button" @click="toggleactive">+</div>
+      <div class="arbitrary-time-input__button" @click="toggleActive">+</div>
       <span>任意の時刻を入力</span>
     </div>
     <div v-else>
-      <div class="arbitrary-time-input__button" @click="toggleactive">-</div>
+      <div class="arbitrary-time-input__button" @click="toggleActive">-</div>
       <label>日付</label>
       <datepicker
         class="date-picker"
@@ -54,7 +54,7 @@ export default defineComponent({
       })
     );
 
-    const toggleactive = () => {
+    const toggleActive = () => {
       active.value = !active.value;
       context.emit("toggle-active");
     };
@@ -81,7 +81,7 @@ export default defineComponent({
       inputTime,
       pickedDate,
       pickedTime,
-      toggleactive,
+      toggleActive,
     };
   },
 });
