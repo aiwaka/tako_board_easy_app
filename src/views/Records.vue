@@ -8,7 +8,7 @@
     <div class="record-list-container">
       <!-- レコードリスト -->
       <h4>リスト</h4>
-      <record-list-vue :records="records" @delete-record="deleteRecord" />
+      <records-list-vue :records="records" @delete-record="deleteRecord" />
     </div>
   </div>
 </template>
@@ -17,7 +17,7 @@
 import { defineComponent, reactive, toRefs } from "vue";
 import { Record, recordTypeStr } from "@/modules/record";
 import { getRecordsList } from "@/composables/get-records-list";
-import RecordListVue from "@/components/RecordList.vue";
+import RecordsListVue from "@/components/RecordsList.vue";
 import QueryMaker from "@/components/QueryMaker.vue";
 import { QueryConstraint } from "@firebase/firestore";
 import RecordInputBox from "@/components/RecordInputBox.vue";
@@ -28,7 +28,7 @@ interface State {
 
 export default defineComponent({
   components: {
-    RecordListVue,
+    RecordsListVue,
     QueryMaker,
     RecordInputBox,
   },

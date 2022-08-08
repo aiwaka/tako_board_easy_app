@@ -1,5 +1,5 @@
 <template>
-  <table class="record-table">
+  <table v-if="records.length !== 0" class="record-table">
     <!-- <thead>
       <tr>
         <th colspan="6">リスト</th>
@@ -14,6 +14,9 @@
       />
     </tbody>
   </table>
+  <div v-else>
+    <span>レコードがありません</span>
+  </div>
 </template>
 
 <script lang="ts">
