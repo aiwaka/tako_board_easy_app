@@ -2,11 +2,11 @@
   <!-- 任意時刻を指定できるボックス. 反映されるか否かはボックスを開いているか否かのみに依存する. -->
   <div class="arbitrary-time-input">
     <div v-if="!active">
-      <div class="arbit-time-input__button" @click="toggleactive">+</div>
+      <div class="arbitrary-time-input__button" @click="toggleactive">+</div>
       <span>任意時刻を入力する場合は+ボタンを押して開く</span>
     </div>
     <div v-else>
-      <div class="arbit-time-input__button" @click="toggleactive">-</div>
+      <div class="arbitrary-time-input__button" @click="toggleactive">-</div>
       <span>
         この欄を開いたまま「追加」することで任意の時刻を反映できます。<br />
         時刻は時の次に分をクリック・タップして入力します。
@@ -94,21 +94,22 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .arbitrary-time-input {
-  border: 1px dashed #777777;
+  border: 1px dashed #777;
   padding: 1rem 0.6rem;
-  .arbit-time-input__button {
+  &__button {
     display: inline-block;
     width: 1rem;
     height: 1rem;
     line-height: 1rem;
-    border: 1px solid #000000;
+    border: 1px solid #000;
     cursor: pointer;
   }
   span {
     margin: 0 0.5rem;
   }
   .date-picker input {
-    width: 7rem;
+    // width: 7rem;
+    margin: auto 1.8rem;
   }
 }
 </style>

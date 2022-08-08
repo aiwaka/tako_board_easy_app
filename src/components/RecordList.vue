@@ -1,10 +1,10 @@
 <template>
   <table class="record-table">
-    <thead>
+    <!-- <thead>
       <tr>
         <th colspan="6">リスト</th>
       </tr>
-    </thead>
+    </thead> -->
     <tbody>
       <record-row-vue
         v-for="record in records"
